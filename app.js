@@ -1,7 +1,24 @@
 // ---------- Helpers ----------
+// Ids fuer Datensaetze UND fuer hochgeladene Dateien (db.js: gatewayUploadFile
+// schickt sie als "id" an dav-file-put). Der Worker prueft diese Id in
+// prepareFileAction() gegen FILE_ID_RE und akzeptiert AUSSCHLIESSLICH das
+// UUID-Format. Der Guard auf crypto.randomUUID war da, der Fallback lieferte
+// aber "s" + 8 Hex-Zeichen: auf iOS mit Safari < 15.4 (kein randomUUID) schlug
+// deshalb nicht der Aufruf fehl, sondern der Upload -- mit HTTP 400
+// "Ungueltige Datei-Id". crypto.getRandomValues gibt es dort seit jeher,
+// daraus bauen wir das Format selbst: 16 Zufallsbytes, Version 4 und Variante
+// gesetzt.
 function uuid() {
-  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
-  return "sxxxxxxxx".replace(/x/g, () => ((Math.random() * 16) | 0).toString(16));
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  const b = new Uint8Array(16);
+  crypto.getRandomValues(b);
+  b[6] = (b[6] & 0x0f) | 0x40;
+  b[8] = (b[8] & 0x3f) | 0x80;
+  const hex = Array.from(b, (x) => x.toString(16).padStart(2, "0")).join("");
+  return hex.slice(0, 8) + "-" + hex.slice(8, 12) + "-" + hex.slice(12, 16) +
+         "-" + hex.slice(16, 20) + "-" + hex.slice(20);
 }
 function escapeHtml(str) {
   if (str == null) return "";

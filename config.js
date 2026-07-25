@@ -91,6 +91,17 @@ const ROLLEN_RECHTE = {
 
 const APP_CHANGELOG = [
   {
+    version: "1.1",
+    groups: [
+      {
+        title: "Datei-Upload auf älteren iPhones/iPads",
+        items: [
+          "Auf iOS-Geräten mit Safari älter als 15.4 schlug das Hochladen von Dateien fehl („Ungültige Datei-Id“), weil die intern vergebene Id dort nicht im vom Server verlangten Format erzeugt wurde. Die Id wird jetzt bei Bedarf selbst im richtigen Format erzeugt; auf neueren Geräten ändert sich nichts."
+        ]
+      }
+    ]
+  },
+  {
     version: "1.0",
     groups: [
       {
