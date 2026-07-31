@@ -89,6 +89,49 @@
   .tab-section.active { display: block; }
   .changelog-list { list-style: disc; padding-left: 20px; margin: 0;
                     font-size: 14px; line-height: 1.6; color: var(--muted); text-align: left; }
+
+/* ---------------------------------------------------------------------
+   Datenschutzhinweis nach Art. 13 DSGVO
+   ---------------------------------------------------------------------
+   Bewusst aufklappbar: die Angaben muessen vollstaendig dastehen, duerfen
+   das Formular aber nicht zuschuetten. Zugeklappt ist der Standard --
+   Art. 13 verlangt, dass die Information verfuegbar ist, nicht dass sie
+   ungefragt zwei Bildschirme fuellt.
+
+   Die Farben tragen Rueckfallwerte, weil derselbe Block in mehreren Repos
+   der Flotte steht und die Variablennamen dort nicht ueberall gleich
+   heissen. Ohne den Fallback waere die Schrift in manchen Apps schwarz
+   auf weiss statt gedaempft. */
+.ds-block {
+  border: 1px solid var(--line, var(--border, #dfe3e8));
+  border-radius: 8px;
+  background: #fbfcfd;
+  margin: 14px 0 0;
+}
+.ds-block > summary {
+  cursor: pointer;
+  padding: 10px 12px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--blue, #1f4e9c);
+  list-style: none;
+}
+/* Das eigene Dreieck statt des nativen Markers: Safari auf aelteren
+   iOS-Geraeten rendert list-style an <summary> nicht zuverlaessig. */
+.ds-block > summary::-webkit-details-marker { display: none; }
+.ds-block > summary::before { content: "\25B8\00A0"; }
+.ds-block[open] > summary::before { content: "\25BE\00A0"; }
+.ds-inhalt {
+  padding: 0 12px 12px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--muted, #667085);
+}
+.ds-inhalt p { margin: 0 0 8px; }
+.ds-inhalt strong { color: var(--text, #1c2330); }
+.ds-inhalt ul { margin: 0 0 8px; padding-left: 18px; }
+.ds-inhalt li { margin: 2px 0; }
+.ds-inhalt a { color: var(--blue, #1f4e9c); }
 </style>
 </head>
 <body>
@@ -136,6 +179,48 @@
     <label for="pw2">Passwort wiederholen</label>
     <input type="password" id="pw2" autocomplete="new-password" />
     <p class="hinweis">Mindestens 12 Zeichen, mit Groß- und Kleinbuchstaben und einer Zahl oder einem Sonderzeichen. Tipp: Denk dir einen Satz aus, den nur du kennst.</p>
+    <!-- Information nach Art. 13 DSGVO. Steht beim Passwort-Schritt, weil hier
+         das Konto tatsaechlich entsteht. Der Kader besteht ueberwiegend aus
+         Minderjaehrigen -- deshalb der ausdrueckliche Absatz fuer Eltern. -->
+    <details class="ds-block">
+      <summary>Was mit deinen Daten geschieht (Information nach Art. 13 DSGVO)</summary>
+      <div class="ds-inhalt">
+        <p><strong>Verantwortlich</strong> ist der 1. SC 1911 Heiligenstadt,
+        Leineberg 2, 37308 Heilbad Heiligenstadt, Telefon 03606 612206,
+        <a href="mailto:info@sc1911-heiligenstadt.de">info@sc1911-heiligenstadt.de</a>.</p>
+
+        <p><strong>Wozu und auf welcher Grundlage:</strong> Mit dem Konto
+        verbindest du dich mit deinem Platz im Kader. Im Kadermanager
+        organisiert deine Mannschaft Trainings und Spiele — dort stehen dein
+        Name, deine Position und Rückennummer sowie deine Zu- und Absagen zu
+        Terminen. Das gehört zur Durchführung deiner Mitgliedschaft im Verein
+        (Art. 6 Abs. 1 lit. b DSGVO). Dein Passwort speichern wir nur
+        verschlüsselt und können es selbst nicht lesen.</p>
+
+        <p><strong>Wer die Daten sieht:</strong> Die Trainer und Mitglieder
+        deiner Mannschaft. Nicht die Öffentlichkeit und nicht andere
+        Mannschaften. Gespeichert wird auf Servern in Deutschland, die ein
+        Auftragsverarbeiter für uns betreibt.</p>
+
+        <p><strong>Wie lange:</strong> Solange du in der Mannschaft spielst.
+        Verlässt du den Verein, wird dein Kaderplatz entfernt.</p>
+
+        <p><strong>Für Eltern:</strong> Ist der Spieler minderjährig, üben Sie
+        seine Rechte aus. Wenn Sie Fragen zur Verarbeitung haben oder
+        möchten, dass wir die Daten Ihres Kindes löschen, wenden Sie sich an
+        die oben genannte Anschrift.</p>
+
+        <p><strong>Deine Rechte:</strong> Auskunft, Berichtigung, Löschung,
+        Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch
+        gegen die Verarbeitung. Beschweren kannst du dich beim Thüringer
+        Landesbeauftragten für den Datenschutz und die Informationsfreiheit.</p>
+
+        <p>Ausführlich steht das in der
+        <a href="https://www.sc1911-heiligenstadt.de/datenschutz/" target="_blank" rel="noopener">Datenschutzerklärung
+        des Vereins</a>.</p>
+      </div>
+    </details>
+
     <button class="btn" id="btn-fertig">Konto anlegen</button>
   </div>
 
