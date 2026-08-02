@@ -91,90 +91,80 @@ const ROLLEN_RECHTE = {
 
 const APP_CHANGELOG = [
   {
-    version: "1.2",
-    groups: [
-      {
-        title: "Bedienung am Handy",
-        items: [
-          "Eingabefelder sind am Handy mindestens 16 Pixel groß. Dadurch zoomt der iPhone-Browser beim Antippen eines Feldes nicht mehr ungefragt in die Seite hinein und bleibt danach verschoben stehen."
-        ]
-      }
-    ]
-  },
-  {
-    version: "1.1",
-    groups: [
-      {
-        title: "Datei-Upload auf älteren iPhones/iPads",
-        items: [
-          "Auf iOS-Geräten mit Safari älter als 15.4 schlug das Hochladen von Dateien fehl („Ungültige Datei-Id“), weil die intern vergebene Id dort nicht im vom Server verlangten Format erzeugt wurde. Die Id wird jetzt bei Bedarf selbst im richtigen Format erzeugt; auf neueren Geräten ändert sich nichts."
-        ]
-      }
-    ]
-  },
-  {
     version: "1.0",
     groups: [
       {
-        title: "Termine & Zu-/Absagen",
+        title: "Termine und Zu- oder Absagen",
         items: [
-          "Vereinsinterne Alternative zu SpielerPlus: mehrere Mannschaften mit je eigenem Kader und eigenen Terminen (Training, Spiel, Sonstiges); wöchentlich wiederkehrende Termine lassen sich in einem Schritt anlegen.",
+          "Die vereinseigene Alternative zu SpielerPlus: mehrere Mannschaften mit je eigenem Kader und eigenen Terminen für Training, Spiel und Sonstiges. Wöchentlich wiederkehrende Termine lassen sich in einem Schritt anlegen.",
           "Zu jedem Termin sagen die Spieler zu, ab oder „unsicher“ — mit Bilanz auf einen Blick, wer kommt.",
-          "Spieler mit eigenem Tools-Konto verknüpfen sich per „Das bin ich“ selbst mit ihrem Kaderplatz und melden sich dann selbst an/ab; Trainer und Betreuer können für alle anderen eintragen.",
-          "Je Termin zusätzlich: Aufgaben (an Spieler verteilen, abhaken), Gruppen (Trainings-Untergruppen), ein Video-Link und eine leichtgewichtige Fahrgemeinschaft (Plätze anbieten/suchen); bei Spielen ein Spielbericht mit Ergebnis, Torschützen und Freitext-Bericht."
+          "Spieler mit eigenem Konto verknüpfen sich per „Das bin ich“ selbst mit ihrem Kaderplatz und melden sich danach selbst an und ab. Trainer und Betreuer tragen für alle übrigen ein.",
+          "Zu jedem Termin gehören außerdem: Aufgaben zum Verteilen und Abhaken, Trainingsgruppen, ein Video-Link und eine einfache Fahrgemeinschaft mit Plätzen anbieten und suchen.",
+          "Bei Spielen kommt ein Spielbericht dazu — Ergebnis, Torschützen und Freitext."
         ]
       },
       {
         title: "Gruppen über Mannschaftsgrenzen hinweg",
         items: [
-          "Neben Mannschaften lassen sich Gruppen anlegen (z. B. Torwartgruppe, Athletikgruppe): dieselben Termine, Zu-/Absagen, Umfragen und Auswertungen wie bei einer Mannschaft, nur ohne eigene Kasse.",
-          "Ein Spieler kann gleichzeitig in seiner Mannschaft und in einer oder mehreren Gruppen stehen.",
-          "Beim Anlegen eines Spielers in einer Gruppe lässt sich ein vorhandener Spieler aus einer Mannschaft übernehmen — Name und Kontoverknüpfung kommen mit, sodass es dieselbe Person bleibt.",
-          "Meldet sich ein Spieler über den QR-Code für eine zweite Mannschaft oder Gruppe an und ist bereits angemeldet, wird sein bestehendes Konto verknüpft, statt ein zweites anzulegen. Vorher wird angezeigt, mit welchem Konto verknüpft wird.",
+          "Neben Mannschaften lassen sich Gruppen anlegen, etwa eine Torwart- oder Athletikgruppe. Sie haben dieselben Termine, Zu- und Absagen, Umfragen und Auswertungen wie eine Mannschaft — nur keine eigene Kasse.",
+          "Ein Spieler kann gleichzeitig in seiner Mannschaft und in mehreren Gruppen stehen.",
+          "Beim Anlegen in einer Gruppe lässt sich ein vorhandener Spieler übernehmen. Name und Kontoverknüpfung kommen mit, es bleibt dieselbe Person.",
+          "Meldet sich jemand per QR-Code für eine zweite Mannschaft oder Gruppe an und hat schon ein Konto, wird das bestehende verknüpft statt ein zweites angelegt. Vorher wird angezeigt, um welches Konto es geht.",
           "Die Untergruppen innerhalb eines Termins heißen zur Unterscheidung „Trainingsgruppen“."
         ]
       },
       {
         title: "Aufstellung",
         items: [
-          "Visuelles Spielfeld: Spieler per Drag & Drop auf Positionen, Bank oder „Nicht nominiert“ ziehen.",
-          "Spieler-Chips zeigen beim Überfahren mit der Maus Name, Position und Rückennummer; Spieler können optional ein Foto bekommen, das dann statt der Nummer im Chip und in der Kader-Liste erscheint."
+          "Visuelles Spielfeld: Spieler per Ziehen auf Positionen, auf die Bank oder zu „nicht nominiert“.",
+          "Die Spieler-Kacheln zeigen beim Überfahren Name, Position und Rückennummer.",
+          "Ein Spieler kann ein Foto bekommen; es erscheint dann an Stelle der Nummer in der Kachel und in der Kaderliste."
         ]
       },
       {
-        title: "Urlaub/Krank",
+        title: "Anwesenheit, Umfragen und Kasse",
         items: [
-          "Zeitraum-Abwesenheiten, unabhängig von der Zu-/Absage einzelner Termine, mit Hinweis-Badge im Termin."
+          "Abwesenheiten über einen Zeitraum — Urlaub oder krank — unabhängig von der Zu- oder Absage einzelner Termine, mit Hinweis im Termin.",
+          "Anwesenheitsstatistik je Spieler über die vergangenen Termine, getrennt nach Trainings- und Spielquote.",
+          "Umfragen im Team mit Einfach- oder Mehrfachauswahl, Ergebnisbalken und der Übersicht, wer noch nicht abgestimmt hat.",
+          "Mannschaftskasse mit Strafenkatalog, Buchungen je Spieler nach Kategorie — Beitrag, Strafe, Sonstiges —, Kassenstand und offenen Beträgen.",
+          "Eine Buchung wird storniert statt gelöscht: sie bleibt nachvollziehbar, zählt aber nicht mehr zum Kassenstand."
         ]
       },
       {
-        title: "Anwesenheit, Umfragen & Kasse",
+        title: "Spieler-Anmeldung per QR-Code",
         items: [
-          "Anwesenheits-Statistik je Spieler über die vergangenen Termine (Trainings- und Spielquote getrennt).",
-          "Umfragen im Team (Einfach- oder Mehrfachauswahl) mit Ergebnis-Balken und Übersicht, wer noch nicht abgestimmt hat.",
-          "Mannschaftskasse mit Strafenkatalog, Buchungen je Spieler mit Kategorie (Beitrag/Strafe/Sonstiges) und Filter danach, Kassenstand und offenen Beträgen. Buchungen werden storniert statt gelöscht — Nachvollziehbarkeit bleibt erhalten, zählen aber nicht mehr zum Kassenstand."
+          "Ein Trainer öffnet im Kader-Reiter ein zeitlich begrenztes Anmeldefenster, standardmäßig 15 Minuten — zum Beispiel direkt im Training.",
+          "Der dabei erzeugte QR-Code führt zu einer schlanken Anmeldeseite: Spieler ohne eigenes Konto wählen ihren Namen aus dem Kader, vergeben ein Passwort und sind sofort angemeldet.",
+          "So muss der Trainer nicht jedes Konto einzeln anlegen."
         ]
       },
       {
-        title: "Spieler-Registrierung per QR-Code",
+        title: "Rollen und Rechte",
         items: [
-          "Ein Trainer mit Kader-Bearbeiten-Recht öffnet im Kader-Tab ein zeitlich begrenztes Anmelde-Fenster (Standard 15 Minuten) für die Mannschaft — z. B. direkt im Training.",
-          "Der dabei erzeugte QR-Code bzw. Link führt zu einer eigenen, schlanken Anmeldeseite: Spieler ohne eigenes Tools-Konto wählen dort ihren Namen aus dem Kader, vergeben ein eigenes Passwort und sind danach sofort angemeldet — ohne dass der Trainer jedes Konto einzeln anlegen muss."
+          "Kaderspieler können mehrere Rollen tragen: Trainer, Co-Trainer, Torwart- und Athletiktrainer, Betreuer, Kassenwart, Nachwuchsleiter, Fördertrainer und weitere — jeweils mit eigenen Verwaltungsrechten je Bereich.",
+          "Im Reiter „Einstellungen“ zeigt der Bereich „Rollen im Kader“ alle Kadermitglieder mit ihren Rollen auf einen Blick, mit Direktzugriff zum Bearbeiten.",
+          "Die Referenztabelle „Rollen-Rechte“ zeigt, welchen Bereich jede Rolle verwalten darf. Sie ist für Administratoren pflegbar.",
+          "Kadereinträge mit verknüpftem Konto zeigen zusätzlich Lizenz und betreute Mannschaften aus dem zentralen Trainerprofil — rein zur Information.",
+          "Spieler ohne Bearbeiten-Recht speichern trotzdem ihre eigenen Einträge: Zu- und Absage, eigene Aufgaben, Fahrgemeinschaft, Urlaub und Krankheit. Übertragen wird dabei nur die eigene Änderung, nicht die komplette Mannschaftsdatei.",
+          "In der Kasse sehen sie entsprechend nur ihre eigene offene Summe und ihre eigenen Buchungen, nicht den Kassenstand.",
+          "Der Reiter „Info“ ist für alle sichtbar."
         ]
       },
       {
-        title: "Rollen & Rechte",
+        title: "Bedienung am Handy",
         items: [
-          "Kader-Spieler können mehrere Rollen bekommen (Trainer, Co-Trainer, Torwart-/Athletiktrainer, Betreuer, Kassenwart, Nachwuchsleiter, Fördertrainer u. a.) mit granularen Verwalten-Rechten je Bereich, statt nur Admin/Bearbeiter. Bearbeiten-Rechte auf Tool-Ebene werden über die Gruppenverwaltung der Tools-Übersicht vergeben.",
-          "Einstellungen-Tab: Bereich „Rollen im Kader“ zeigt alle Kadermitglieder der Mannschaft mit ihren Rollen auf einen Blick (mit Direktzugriff zum Bearbeiten); Referenztabelle „Rollen-Rechte“ zeigt, welchen Bereich jede Rolle verwalten darf, und ist bearbeitbar für globale Tools-Admins sowie für Gruppen mit der Stufe „Administrieren“ beim Kadermanager (Sichtbarkeits-Panel der Tools-Übersicht).",
-          "Kader-Einträge mit verknüpftem Tools-Konto zeigen zusätzlich Lizenz und betreute Mannschaft(en) aus dem zentralen Trainerprofil an (rein informativ).",
-          "Spieler ohne Bearbeiten-Recht können weiterhin ihre eigenen Einträge speichern (Zu-/Absage, eigene Aufgaben, Fahrgemeinschaft, Urlaub/Krank) — über einen eingeschränkten Weg, der nur die eigene Änderung überträgt statt der kompletten Mannschaftsdatei. In der Mannschaftskasse sehen sie entsprechend nur ihre eigene offene Summe und ihre eigenen Buchungen statt des gesamten Kassenstands."
+          "Die Ansicht ist für das Handy gebaut — Zu- und Absagen funktionieren dort genauso wie am Rechner.",
+          "Eingabefelder sind mindestens 16 Pixel groß, damit der iPhone-Browser beim Antippen nicht ungefragt in die Seite hineinzoomt und verschoben stehen bleibt.",
+          "Der Datei-Upload funktioniert auch auf älteren iPhones und iPads: die interne Datei-Kennung wird notfalls selbst im geforderten Format erzeugt. Zuvor schlug er dort mit „Ungültige Datei-Id“ fehl.",
+          "Das Ziehen in der Aufstellung braucht eine Maus."
         ]
       },
       {
-        title: "Speicherung",
+        title: "Daten & Speicherung",
         items: [
-          "Automatische Nextcloud-Synchronisierung über die zentrale Anmeldung (Tools-Übersicht) — kein separates Passwort nötig; gleichzeitige Änderungen von zwei Geräten werden erkannt und gemeldet."
+          "Gespeichert wird in der Vereins-Nextcloud über die zentrale Anmeldung der Tools-Übersicht — ein eigenes Passwort braucht es nicht.",
+          "Ändern zwei Geräte gleichzeitig denselben Stand, erkennt die App das, lädt den fremden Stand nach und sagt Bescheid."
         ]
       }
     ]
