@@ -1,6 +1,6 @@
 # Kadermanager (v1.0)
 
-Vereinsinterne Alternative zu SpielerPlus (Teamorganisation, An-/Abmeldungen zu Terminen, Anwesenheit, Umfragen, Mannschaftskasse) — Teil der [Tools-Übersicht](https://tecko1985.github.io/ToolsUebersicht/) des 1. SC 1911 Heiligenstadt.
+Vereinsinterne Alternative zu SpielerPlus (Teamorganisation, An-/Abmeldungen zu Terminen, Anwesenheit, Umfragen, Mannschaftskasse) — Teil der [Tools-Übersicht](https://sc1911heiligenstadt.github.io/ToolsUebersicht/) des 1. SC 1911 Heiligenstadt.
 
 ## Funktionen
 
