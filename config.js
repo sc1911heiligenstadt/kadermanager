@@ -118,7 +118,10 @@ const APP_CHANGELOG = [
         items: [
           "Visuelles Spielfeld: Spieler per Ziehen auf Positionen, auf die Bank oder zu „nicht nominiert“.",
           "Die Spieler-Kacheln zeigen beim Überfahren Name, Position und Rückennummer.",
-          "Ein Spieler kann ein Foto bekommen; es erscheint dann an Stelle der Nummer in der Kachel und in der Kaderliste."
+          "Ein Spieler kann ein Foto bekommen; es erscheint dann an Stelle der Nummer in der Kachel und in der Kaderliste.",
+          "Wer in der Tools-Übersicht unter „Mein Konto“ ein eigenes Bild hinterlegt hat, wird hier automatisch damit angezeigt — verknüpft über sein Konto. Bei rund 200 Spielern muss so niemand mehr Bilder von Hand zusammentragen.",
+          "Der Upload durch den Trainer bleibt: er ist der Weg für alle ohne eigenes Vereinskonto und wird nur überstimmt, sobald jemand selbst ein Bild hinterlegt. Ohne beides steht wie gehabt die Nummer oder der Anfangsbuchstabe da.",
+          "Tauscht jemand sein Konto-Bild aus, ist das neue sofort zu sehen — es bleibt kein altes im Zwischenspeicher hängen."
         ]
       },
       {
