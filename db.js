@@ -133,6 +133,33 @@ async function fetchTrainerProfiles() {
   return Array.isArray(body.profiles) ? body.profiles : [];
 }
 
+// Nutzerfotos aus der ToolsUebersicht (seit 2026-08-04). Wer hat eins, und in
+// welchem Stand? Ein Aufruf für ALLE — die Bilder selbst holt app.js danach
+// einzeln und nur für das, was wirklich angezeigt wird.
+//
+// ⚠️ Bewusst keine Sammel-Aktion für die Bilder: bei ~200 Spielern wären das 200
+// Nextcloud-Zugriffe in einem einzigen Worker-Request (Grenze für Unteranfragen)
+// und mehrere Megabyte in einer Antwort.
+async function fetchNutzerfotoVersionen() {
+  const body = await gatewayRequest({ action: "nutzerfoto-versionen" });
+  return (body && body.versionen && typeof body.versionen === "object") ? body.versionen : {};
+}
+
+// Ein einzelnes Nutzerfoto. Anders als gatewayFetchFileBlob läuft das NICHT über
+// dav-file-get: das Foto gehört zum Konto, nicht zu dieser App.
+async function gatewayFetchNutzerfoto(username) {
+  const token = getSessionToken();
+  if (!token) throw new NotLoggedInError();
+  const resp = await fetch(GATEWAY_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+    body: JSON.stringify({ action: "nutzerfoto-get", username })
+  });
+  if (resp.status === 401) throw new NotLoggedInError("Sitzung abgelaufen");
+  if (!resp.ok) throw new Error("Foto nicht abrufbar (HTTP " + resp.status + ")");
+  return resp.blob();
+}
+
 // ---------- Datei-Gateway (Binär-Upload über die dav-file-*-Gateway-Aktionen) ----------
 // Gleiches Muster wie E:\vereinskalender\db.js — dieselben Worker-Aktionen sind generisch
 // über DAV_APPS[app] geroutet, kein zusätzlicher admin-worker.js-Code nötig. Wird von

@@ -588,15 +588,44 @@ function renderDetail() {
 // Client-seitig auf FOTO_MAX_DIMENSION verkleinert/komprimiert (siehe resizeImageFile).
 const fotoUrlCache = new Map();
 const fotoLoadPromises = new Map();
-function loadFoto(fotoId) {
-  if (!fotoId) return Promise.resolve(null);
-  if (fotoUrlCache.has(fotoId)) return Promise.resolve(fotoUrlCache.get(fotoId));
-  if (fotoLoadPromises.has(fotoId)) return fotoLoadPromises.get(fotoId);
-  const p = gatewayFetchFileBlob(fotoId)
-    .then((blob) => { const url = URL.createObjectURL(blob); fotoUrlCache.set(fotoId, url); return url; })
+
+// Nutzername -> Zeitstempel des im ToolsUebersicht-Konto hinterlegten Fotos
+// (seit 2026-08-04). Wird beim Laden EINMAL für alle geholt, siehe init().
+let nutzerfotoVersionen = {};
+
+// Welches Bild gilt für diesen Kader-Eintrag?
+//
+// Vorrangkette: das im Konto hinterlegte Nutzerfoto → der Upload des Trainers →
+// (in applyAvatarVisual) Nummer bzw. Initiale.
+//
+// ⚠️ Der Trainer-Upload wird dadurch NICHT überflüssig: er bleibt der einzige Weg
+// für Spieler ohne eigenes Konto. Er wird nur überstimmt, sobald die Person selbst
+// ein Bild hinterlegt hat — die pflegt sich damit selbst, und niemand muss 200
+// Fotos von Hand nachziehen.
+//
+// Der Schlüssel trägt die Version mit: ein neues Konto-Foto erzeugt einen neuen
+// Schlüssel und damit einen frischen Abruf, statt hinter dem alten hängenzubleiben.
+function avatarFotoSchluessel(s) {
+  const u = (s && s.linkedUsername) ? String(s.linkedUsername).toLowerCase() : "";
+  const version = u ? nutzerfotoVersionen[u] : null;
+  if (version) return "konto:" + u + "@" + version;
+  return (s && s.fotoId) ? s.fotoId : "";
+}
+
+function loadFoto(schluessel) {
+  if (!schluessel) return Promise.resolve(null);
+  if (fotoUrlCache.has(schluessel)) return Promise.resolve(fotoUrlCache.get(schluessel));
+  if (fotoLoadPromises.has(schluessel)) return fotoLoadPromises.get(schluessel);
+  // "konto:<nutzername>@<version>" kommt aus der ToolsUebersicht und gehört zum
+  // Konto; alles andere ist eine Datei-Id aus der dav-file-Ablage dieser App.
+  const holen = schluessel.indexOf("konto:") === 0
+    ? gatewayFetchNutzerfoto(schluessel.slice(6, schluessel.lastIndexOf("@")))
+    : gatewayFetchFileBlob(schluessel);
+  const p = holen
+    .then((blob) => { const url = URL.createObjectURL(blob); fotoUrlCache.set(schluessel, url); return url; })
     .catch((e) => { console.warn("Foto konnte nicht geladen werden:", e); return null; })
-    .finally(() => fotoLoadPromises.delete(fotoId));
-  fotoLoadPromises.set(fotoId, p);
+    .finally(() => fotoLoadPromises.delete(schluessel));
+  fotoLoadPromises.set(schluessel, p);
   return p;
 }
 // Verkleinert/komprimiert eine ausgewählte Bilddatei clientseitig auf maxDim (längste
@@ -643,9 +672,12 @@ function applyAvatarVisual(el, s, opts) {
   el.style.backgroundImage = "";
   el.classList.remove("has-foto");
   content.textContent = s.nummer || (s.name ? s.name.trim().charAt(0).toUpperCase() : "?");
-  if (!s.fotoId) { delete el.dataset.fotoFor; return; }
-  el.dataset.fotoFor = s.fotoId;
-  const cached = fotoUrlCache.get(s.fotoId);
+  // Seit 2026-08-04 nicht mehr direkt s.fotoId, sondern der Schlüssel aus der
+  // Vorrangkette (Konto-Foto vor Trainer-Upload).
+  const schluessel = avatarFotoSchluessel(s);
+  if (!schluessel) { delete el.dataset.fotoFor; return; }
+  el.dataset.fotoFor = schluessel;
+  const cached = fotoUrlCache.get(schluessel);
   if (cached) {
     el.style.backgroundImage = `url("${cached}")`;
     el.classList.add("has-foto");
@@ -658,8 +690,8 @@ function applyAvatarVisual(el, s, opts) {
     }
     return;
   }
-  loadFoto(s.fotoId).then((url) => {
-    if (url && el.isConnected && el.dataset.fotoFor === s.fotoId) applyAvatarVisual(el, s, opts);
+  loadFoto(schluessel).then((url) => {
+    if (url && el.isConnected && el.dataset.fotoFor === schluessel) applyAvatarVisual(el, s, opts);
   });
 }
 function avatarTooltip(s) {
@@ -2184,6 +2216,11 @@ async function startApp() {
   renderAll();
   try { currentUser = await fetchMe(); } catch (_) { /* best effort */ }
   try { trainerProfiles = await fetchTrainerProfiles(); } catch (_) { /* best effort */ }
+  // Ein Aufruf für alle Nutzerfotos. Best effort wie die Zeile darüber: antwortet
+  // der Worker (noch) nicht, bleibt es beim bisherigen Bild — Trainer-Upload oder
+  // Nummer/Initiale. Muss VOR renderAll() stehen, sonst zeigt der erste Aufbau
+  // die Initialen und erst ein späteres Rendern die Fotos.
+  try { nutzerfotoVersionen = await fetchNutzerfotoVersionen(); } catch (_) { /* best effort */ }
   renderHeaderUser();
   renderAll();
 }
