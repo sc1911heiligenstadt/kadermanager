@@ -584,7 +584,7 @@ function renderDetail() {
 // ---------- Spielerfotos (Blob-Cache über das Datei-Gateway) ----------
 // fotoId zeigt auf die dav-file-*-Ablage (siehe db.js) — kein eigener
 // Speichermechanismus, und die Fotos landen NICHT in appData selbst (das wird
-// bei jedem persist() komplett neu geladen/gespeichert, siehe saveNow/gatewaySave).
+// bei jedem persist() komplett neu geladen/gespeichert, siehe doPersist/gatewaySave).
 // Client-seitig auf FOTO_MAX_DIMENSION verkleinert/komprimiert (siehe resizeImageFile).
 const fotoUrlCache = new Map();
 const fotoLoadPromises = new Map();
@@ -2106,7 +2106,6 @@ function persistSelbst(nachricht) {
       await reloadAfterConflict();
     });
 }
-async function saveNow() { clearTimeout(persistTimer); return doPersist(); }
 
 // Es darf immer nur EIN dav-save unterwegs sein. gatewayRev (das ETag, mit dem der
 // Worker Konflikte erkennt) wird erst aktualisiert, wenn ein Save zurückkommt —
