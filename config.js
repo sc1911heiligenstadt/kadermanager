@@ -91,6 +91,21 @@ const ROLLEN_RECHTE = {
 
 const APP_CHANGELOG = [
   {
+    version: "2.3",
+    groups: [
+      {
+        title: "Mannschaften aus der Vereinsliste",
+        items: [
+          "Beim Anlegen einer Mannschaft schlägt das Namensfeld die echten Mannschaften des Vereins vor — die Liste, die in der Tools-Übersicht unter Einstellungen → Mannschaften gepflegt wird. Wählst du eine aus, heißt sie hier genauso wie überall sonst.",
+          "Einen eigenen Namen tippen geht weiter.",
+          "Bei einer Gruppe (Torwartgruppe, Athletikgruppe) werden bewusst keine Mannschaften vorgeschlagen — eine Gruppe ist ja mannschaftsübergreifend.",
+          "Aufgelöste Mannschaften werden nicht vorgeschlagen.",
+          "An bestehenden Mannschaften ändert sich nichts: Kader, Termine, Kasse und die Freigabelinks bleiben unangetastet."
+        ]
+      }
+    ]
+  },
+  {
     version: "1.0",
     groups: [
       {

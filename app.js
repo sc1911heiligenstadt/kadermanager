@@ -64,6 +64,25 @@ function terminTyp(id) { return TERMIN_TYPEN.find((t) => t.id === id) || TERMIN_
 let appData = { meta: {}, teams: [] };
 let currentUser = null;
 let trainerProfiles = []; // zentrale Lizenz/Mannschaft-Profile aller Nutzer (read-only, Join über linkedUsername)
+// Die Mannschaften des Vereins aus der zentralen Liste (seit 2026-08-12).
+//
+// Der Kadermanager führt seine Teams weiterhin selbst — an ihrer `id` hängen
+// Kader, Termine, Kasse und die Freigabelinks. Die Vereinsliste ist deshalb ein
+// VORSCHLAG fürs Namensfeld, keine Schranke: sie fasst nichts Bestehendes an,
+// und ein eigener Name bleibt möglich.
+//
+// ⚠️ Bewusst NUR die Auswahlliste, KEIN Knopf zum Sammel-Übernehmen. Im Busplan
+// gab es einen, und Michel hat ihn am 2026-08-12 wieder streichen lassen.
+// Nicht ungefragt neu bauen.
+let vereinsMannschaften = [];
+
+function renderVereinsListe() {
+  const dl = document.getElementById("vereins-mannschaften");
+  if (!dl) return;
+  dl.innerHTML = vereinsMannschaften
+    .map((m) => `<option value="${escapeHtml(m.kurz)}">${escapeHtml(m.lang)}${m.liga ? " · " + escapeHtml(m.liga) : ""}</option>`)
+    .join("");
+}
 let currentTab = "termine";
 let currentTeamId = null;
 let termineFilter = "kommend";
@@ -1864,7 +1883,13 @@ function renderTeamAdmin() {
 function setTeamModalTyp(typ) {
   const gruppe = typ === "gruppe";
   document.querySelectorAll("#tf-typ button").forEach((b) => b.classList.toggle("active", (b.dataset.typ === "gruppe") === gruppe));
-  document.getElementById("tf-name").placeholder = gruppe ? "z. B. Torwartgruppe" : "z. B. A-Jugend";
+  const nameFeld = document.getElementById("tf-name");
+  nameFeld.placeholder = gruppe ? "z. B. Torwartgruppe" : "z. B. B1";
+  // ⚠️ Die Vereinsmannschaften werden NUR bei einer Mannschaft vorgeschlagen.
+  // Eine Gruppe ist mannschaftsübergreifend (Torwartgruppe, Athletikgruppe) —
+  // dort wäre „B1" als Vorschlag genau der falsche Hinweis.
+  if (gruppe) nameFeld.removeAttribute("list");
+  else nameFeld.setAttribute("list", "vereins-mannschaften");
   document.getElementById("tf-typ-hinweis").textContent = gruppe
     ? "Mannschaftsübergreifend: die Spieler stehen zusätzlich in ihrer eigenen Mannschaft. Eigene Termine und Auswertung, aber keine Kasse."
     : "";
@@ -2220,6 +2245,11 @@ async function startApp() {
   // Nummer/Initiale. Muss VOR renderAll() stehen, sonst zeigt der erste Aufbau
   // die Initialen und erst ein späteres Rendern die Fotos.
   try { nutzerfotoVersionen = await fetchNutzerfotoVersionen(); } catch (_) { /* best effort */ }
+  // Die Mannschaften des Vereins für die Auswahl im Team-Formular. Best effort
+  // wie die Zeilen darüber — ohne sie ist das Namensfeld einfach ein leeres
+  // Textfeld wie bisher.
+  vereinsMannschaften = await fetchVereinsMannschaften();
+  renderVereinsListe();
   renderHeaderUser();
   renderAll();
 }
