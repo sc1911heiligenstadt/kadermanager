@@ -91,6 +91,19 @@ const ROLLEN_RECHTE = {
 
 const APP_CHANGELOG = [
   {
+    version: "2.5",
+    groups: [
+      {
+        title: "Beim Abmelden bleibt nichts stehen",
+        items: [
+          "Läuft die Anmeldung ab, während die App offen ist — zum Beispiel weil ein Speichern nach längerer Pause fehlschlägt —, erscheint wie bisher der Hinweis „bitte neu anmelden“.",
+          "Neu ist: der Bildschirm dahinter wird jetzt auch geleert. Vorher wurde er nur unsichtbar gemacht, und alles Angezeigte blieb im Browser stehen — sichtbar für jeden, der sich an denselben Rechner setzt und nachschaut.",
+          "Für dich ändert sich nichts: der Weg zurück war schon immer ein Neuladen der Seite."
+        ]
+      }
+    ]
+  },
+  {
     version: "2.4",
     groups: [
       {
