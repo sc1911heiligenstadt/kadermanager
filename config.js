@@ -91,6 +91,18 @@ const ROLLEN_RECHTE = {
 
 const APP_CHANGELOG = [
   {
+    version: "2.6",
+    groups: [
+      {
+        title: "Die App ist beim Öffnen schneller vollständig",
+        items: [
+          "Trainerprofile, Nutzerfotos und die Mannschaftsliste des Vereins wurden bisher streng nacheinander geholt — jede erst, wenn die davor zurück war. Jetzt laufen die drei Abfragen gemeinsam los.",
+          "Bis dahin standen die Kaderlisten mit Initialen statt Fotos da und das Mannschaftsfeld im Team-Formular war leer. Diese Wartezeit fällt weg."
+        ]
+      }
+    ]
+  },
+  {
     version: "2.5",
     groups: [
       {

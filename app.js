@@ -2248,17 +2248,30 @@ async function startApp() {
   document.getElementById("app-shell").style.display = "";
   currentTeamId = appData.meta.currentTeamId;
   renderAll();
+  // fetchMe() kostet hier nichts: der Merker aus gatewayLoad() bedient es (db.js).
   try { currentUser = await fetchMe(); } catch (_) { /* best effort */ }
-  try { trainerProfiles = await fetchTrainerProfiles(); } catch (_) { /* best effort */ }
-  // Ein Aufruf für alle Nutzerfotos. Best effort wie die Zeile darüber: antwortet
-  // der Worker (noch) nicht, bleibt es beim bisherigen Bild — Trainer-Upload oder
-  // Nummer/Initiale. Muss VOR renderAll() stehen, sonst zeigt der erste Aufbau
-  // die Initialen und erst ein späteres Rendern die Fotos.
-  try { nutzerfotoVersionen = await fetchNutzerfotoVersionen(); } catch (_) { /* best effort */ }
-  // Die Mannschaften des Vereins für die Auswahl im Team-Formular. Best effort
-  // wie die Zeilen darüber — ohne sie ist das Namensfeld einfach ein leeres
-  // Textfeld wie bisher.
-  vereinsMannschaften = await fetchVereinsMannschaften();
+
+  // ⚠️ Die drei Aufrufe hier liefen bis 2026-08-28 streng NACHEINANDER, obwohl
+  // keiner das Ergebnis eines anderen braucht -- drei serielle Roundtrips a
+  // ~180 ms, in denen der Nutzer die Kaderliste ohne Fotos und ohne Mannschaften
+  // ansieht. Jetzt eine Welle. Jeder faengt seinen Fehler weiterhin SELBST ab:
+  // ohne das eigene catch wuerde ein einzelner Fehlschlag ueber Promise.all die
+  // beiden anderen Ergebnisse mitreissen.
+  //
+  // Muss weiterhin VOR renderAll() stehen, sonst zeigt der erste Aufbau die
+  // Initialen und erst ein spaeteres Rendern die Fotos.
+  const [profileR, fotosR, mannschaftenR] = await Promise.all([
+    fetchTrainerProfiles().catch(() => null),
+    fetchNutzerfotoVersionen().catch(() => null),
+    // Die Mannschaften des Vereins für die Auswahl im Team-Formular. Die Funktion
+    // faengt ihre Fehler selbst ab und liefert dann [] -- das catch hier ist nur
+    // der Guertel dazu, damit renderVereinsListe() nie auf null trifft (die Zeile
+    // macht ein .map darauf).
+    fetchVereinsMannschaften().catch(() => [])
+  ]);
+  if (profileR !== null) trainerProfiles = profileR;
+  if (fotosR !== null) nutzerfotoVersionen = fotosR;
+  vereinsMannschaften = Array.isArray(mannschaftenR) ? mannschaftenR : [];
   renderVereinsListe();
   renderHeaderUser();
   renderAll();
