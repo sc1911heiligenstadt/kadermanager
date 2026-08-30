@@ -91,6 +91,18 @@ const ROLLEN_RECHTE = {
 
 const APP_CHANGELOG = [
   {
+    version: "2.7",
+    groups: [
+      {
+        title: "Beim Sitzungsende wird auch alles neben der Seite geräumt",
+        items: [
+          "Beim Sitzungsende wurde die Seite bereits geleert. Die sieben Dialoge (Mannschaft, Spieler, Termin, Detail, Umfrage, Buchung, Urlaub) stehen aber daneben und blieben mit Namen und Eingaben stehen. Jetzt werden sie mitgeleert.",
+          "Der Hinweis erscheint außerdem an jeder Stelle, an der die Anmeldung wegfällt — vorher nur bei einem Teil der Wege."
+        ]
+      }
+    ]
+  },
+  {
     version: "2.6",
     groups: [
       {

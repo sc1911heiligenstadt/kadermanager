@@ -2057,6 +2057,7 @@ function applyEditVisibility() {
 }
 
 function renderAll() {
+  if (bildschirmGeraeumt) return;
   renderTeamSelect();
   renderTermine();
   renderKader();
@@ -2228,22 +2229,60 @@ async function reloadAfterConflict() {
 }
 
 // ---------- Start ----------
+// ---------- Sitzungsverlust: räumen, nicht nur verstecken ----------
+
+// ⚠️ Verstecken ist nicht Räumen. Fällt die Sitzung weg, WÄHREND die App
+// offen ist, steht bereits alles auf dem Bildschirm. display:none macht das
+// unsichtbar, nicht weg -- Namen, Nummern und ausgefüllte Formularfelder sind
+// im Seitenquelltext weiter lesbar.
+//
+// ⚠️ Über die CONTAINER räumen, nie über eine Id-Liste. Eine Liste veraltet
+// lautlos: wer später ein Feld ergänzt, müsste daran denken, und genau das eine
+// bliebe stehen.
+//
+// ⚠️ Dialoge, Druckbereich und Bild-Lightbox stehen NEBEN der Hülle, nicht
+// darin -- ihr innerHTML erwischt sie nicht. Ein offener Dialog ist dabei der
+// schlimmste Fall: er steht nicht nur gespeichert, sondern SICHTBAR da.
+//
+// ⚠️ #header-user steht in einigen Apps im Seitenkopf und damit ebenfalls
+// außerhalb. Der Rest des Kopfes (Titel, Logo, Zurück-Link) bleibt absichtlich:
+// ohne ihn stünde man vor einer weißen Seite ohne Weg zurück.
+//
+// Wegwerfen ist gefahrlos: zurück in die App geht es ausschließlich über ein
+// Neuladen der Seite. Wer sich neu anmeldet, bekommt sie ohnehin frisch.
+let bildschirmGeraeumt = false;
+
+// Vor dem ersten Aufbau gibt es nichts zu räumen -- und wer gar nicht angemeldet
+// ist, soll nicht "Sitzung abgelaufen" lesen. Gesetzt wird das erst, wenn die
+// Hülle wirklich sichtbar wird.
+let appLaeuft = false;
+
+function raeumeBildschirm() {
+  bildschirmGeraeumt = true;
+  const huelle = document.getElementById("app-shell");
+  if (huelle) huelle.innerHTML = "";
+  document.querySelectorAll(".modal-overlay, .overlay, #print-area, .foto-lightbox, #header-user").forEach((el) => {
+    el.innerHTML = "";
+    el.classList.add("hidden");
+    el.style.display = "none";
+  });
+}
+
+// ⚠️ Gerufen aus db.js -- an der EINEN Stelle, an der die 401 ankommt. Sonst
+// müsste jeder einzelne Fehlerweg daran denken, und einer vergisst es.
+function raeumeBeiSitzungsverlust() {
+  if (!appLaeuft) return;
+  showConnectScreen("Die Sitzung ist abgelaufen. Bitte über die Tools-Übersicht neu anmelden.");
+}
+
 function showConnectScreen(errorMsg) {
-  // ⚠️ Verstecken ist nicht Räumen. Diese Funktion wird auch MITTEN IM BETRIEB
-  // gerufen — ein Speichern scheitert, weil die Sitzung abgelaufen ist. Dann
-  // steht bereits alles auf dem Bildschirm, und display:none lässt es nur
-  // unsichtbar im DOM zurück: Namen, Adressen, Beträge, offene Formularfelder.
-  //
-  // Wegwerfen ist hier gefahrlos: der Weg zurück in die App führt ausschließlich
-  // über ein Neuladen der Seite (startApp() wird nur aus init() gerufen, nirgends
-  // sonst). Wer sich neu anmeldet, bekommt die Seite ohnehin frisch aufgebaut.
-  const __huelle = document.getElementById("app-shell");
-  if (__huelle) __huelle.innerHTML = "";
+  raeumeBildschirm();
   document.getElementById("connect-screen").style.display = "";
   document.getElementById("app-shell").style.display = "none";
   document.getElementById("cloud-error").textContent = errorMsg ? "Fehler: " + errorMsg : "";
 }
 async function startApp() {
+  appLaeuft = true;
   document.getElementById("connect-screen").style.display = "none";
   document.getElementById("app-shell").style.display = "";
   currentTeamId = appData.meta.currentTeamId;
