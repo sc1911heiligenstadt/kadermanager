@@ -91,81 +91,6 @@ const ROLLEN_RECHTE = {
 
 const APP_CHANGELOG = [
   {
-    version: "2.8",
-    groups: [
-      {
-        title: "Der Reiter „Info“ erklärt jetzt, was die App wirklich tut",
-        items: [
-          "Dort stand bisher ein einzelner Satz. Jetzt steht da, wofür die einzelnen Reiter da sind, was die App mit den Eingaben macht und wo etwas anderes hingehört.",
-          "Am Funktionsumfang ändert sich nichts — nur an der Beschreibung."
-        ]
-      }
-    ]
-  },
-  {
-    version: "2.7",
-    groups: [
-      {
-        title: "Beim Sitzungsende wird auch alles neben der Seite geräumt",
-        items: [
-          "Beim Sitzungsende wurde die Seite bereits geleert. Die sieben Dialoge (Mannschaft, Spieler, Termin, Detail, Umfrage, Buchung, Urlaub) stehen aber daneben und blieben mit Namen und Eingaben stehen. Jetzt werden sie mitgeleert.",
-          "Der Hinweis erscheint außerdem an jeder Stelle, an der die Anmeldung wegfällt — vorher nur bei einem Teil der Wege."
-        ]
-      }
-    ]
-  },
-  {
-    version: "2.6",
-    groups: [
-      {
-        title: "Die App ist beim Öffnen schneller vollständig",
-        items: [
-          "Trainerprofile, Nutzerfotos und die Mannschaftsliste des Vereins wurden bisher streng nacheinander geholt — jede erst, wenn die davor zurück war. Jetzt laufen die drei Abfragen gemeinsam los.",
-          "Bis dahin standen die Kaderlisten mit Initialen statt Fotos da und das Mannschaftsfeld im Team-Formular war leer. Diese Wartezeit fällt weg."
-        ]
-      }
-    ]
-  },
-  {
-    version: "2.5",
-    groups: [
-      {
-        title: "Beim Abmelden bleibt nichts stehen",
-        items: [
-          "Läuft die Anmeldung ab, während die App offen ist — zum Beispiel weil ein Speichern nach längerer Pause fehlschlägt —, erscheint wie bisher der Hinweis „bitte neu anmelden“.",
-          "Neu ist: der Bildschirm dahinter wird jetzt auch geleert. Vorher wurde er nur unsichtbar gemacht, und alles Angezeigte blieb im Browser stehen — sichtbar für jeden, der sich an denselben Rechner setzt und nachschaut.",
-          "Für dich ändert sich nichts: der Weg zurück war schon immer ein Neuladen der Seite."
-        ]
-      }
-    ]
-  },
-  {
-    version: "2.4",
-    groups: [
-      {
-        title: "Am Handy",
-        items: [
-          "Bisher brach die Reiterleiste selbst um, die rechte Reiter-Gruppe darin aber nicht: Sie rutschte als ein Stück in die zweite Zeile und lief dort weiter über den rechten Rand hinaus. Jetzt bricht auch sie um, sobald sie zu breit wird. Zu sehen ist das nur, wenn genug Reiter nebeneinanderstehen — bis dahin sieht alles aus wie bisher."
-        ]
-      }
-    ]
-  },
-  {
-    version: "2.3",
-    groups: [
-      {
-        title: "Mannschaften aus der Vereinsliste",
-        items: [
-          "Beim Anlegen einer Mannschaft schlägt das Namensfeld die echten Mannschaften des Vereins vor — die Liste, die in der Tools-Übersicht unter Einstellungen → Mannschaften gepflegt wird. Wählst du eine aus, heißt sie hier genauso wie überall sonst.",
-          "Einen eigenen Namen tippen geht weiter.",
-          "Bei einer Gruppe (Torwartgruppe, Athletikgruppe) werden bewusst keine Mannschaften vorgeschlagen — eine Gruppe ist ja mannschaftsübergreifend.",
-          "Aufgelöste Mannschaften werden nicht vorgeschlagen.",
-          "An bestehenden Mannschaften ändert sich nichts: Kader, Termine, Kasse und die Freigabelinks bleiben unangetastet."
-        ]
-      }
-    ]
-  },
-  {
     version: "1.0",
     groups: [
       {
@@ -179,12 +104,13 @@ const APP_CHANGELOG = [
         ]
       },
       {
-        title: "Gruppen über Mannschaftsgrenzen hinweg",
+        title: "Mannschaften und Gruppen",
         items: [
-          "Neben Mannschaften lassen sich Gruppen anlegen, etwa eine Torwart- oder Athletikgruppe. Sie haben dieselben Termine, Zu- und Absagen, Umfragen und Auswertungen wie eine Mannschaft — nur keine eigene Kasse.",
-          "Ein Spieler kann gleichzeitig in seiner Mannschaft und in mehreren Gruppen stehen.",
-          "Beim Anlegen in einer Gruppe lässt sich ein vorhandener Spieler übernehmen. Name und Kontoverknüpfung kommen mit, es bleibt dieselbe Person.",
-          "Meldet sich jemand per QR-Code für eine zweite Mannschaft oder Gruppe an und hat schon ein Konto, wird das bestehende verknüpft statt ein zweites angelegt. Vorher wird angezeigt, um welches Konto es geht.",
+          "Beim Anlegen einer Mannschaft schlägt das Namensfeld die echten Mannschaften des Vereins vor — die Liste, die in der Tools-Übersicht unter Einstellungen → Mannschaften gepflegt wird. Wählst du eine aus, heißt sie hier genauso wie überall sonst. Einen eigenen Namen tippen geht weiterhin, und aufgelöste Mannschaften werden nicht vorgeschlagen.",
+          "Neben Mannschaften lassen sich Gruppen anlegen, etwa eine Torwart- oder Athletikgruppe. Sie haben dieselben Termine, Zu- und Absagen, Umfragen und Auswertungen wie eine Mannschaft — nur keine eigene Kasse; bei einer Gruppe fehlt der Reiter „Kasse“ deshalb ganz.",
+          "Bei einer Gruppe werden bewusst keine Vereinsmannschaften vorgeschlagen — eine Gruppe ist ja mannschaftsübergreifend.",
+          "Ein Spieler kann gleichzeitig in seiner Mannschaft und in mehreren Gruppen stehen. Beim Anlegen in einer Gruppe lässt sich ein vorhandener Spieler übernehmen: Name und Kontoverknüpfung kommen mit, es bleibt dieselbe Person.",
+          "Meldet sich jemand für eine zweite Mannschaft oder Gruppe an und hat schon ein Konto, wird das bestehende verknüpft statt ein zweites angelegt. Vorher wird angezeigt, um welches Konto es geht.",
           "Die Untergruppen innerhalb eines Termins heißen zur Unterscheidung „Trainingsgruppen“."
         ]
       },
@@ -203,7 +129,7 @@ const APP_CHANGELOG = [
         title: "Anwesenheit, Umfragen und Kasse",
         items: [
           "Abwesenheiten über einen Zeitraum — Urlaub oder krank — unabhängig von der Zu- oder Absage einzelner Termine, mit Hinweis im Termin.",
-          "Anwesenheitsstatistik je Spieler über die vergangenen Termine, getrennt nach Trainings- und Spielquote.",
+          "Anwesenheitsstatistik je Spieler über die vergangenen Termine, getrennt nach Trainings- und Spielquote und wahlweise auf einen Zeitraum eingegrenzt. Die Quote rechnet Zusagen gegen die Termine, zu denen der Spieler sich überhaupt gemeldet hat; „offen“ zählt nicht mit.",
           "Umfragen im Team mit Einfach- oder Mehrfachauswahl, Ergebnisbalken und der Übersicht, wer noch nicht abgestimmt hat.",
           "Mannschaftskasse mit Strafenkatalog, Buchungen je Spieler nach Kategorie — Beitrag, Strafe, Sonstiges —, Kassenstand und offenen Beträgen.",
           "Eine Buchung wird storniert statt gelöscht: sie bleibt nachvollziehbar, zählt aber nicht mehr zum Kassenstand."
@@ -213,18 +139,22 @@ const APP_CHANGELOG = [
         title: "Spieler-Anmeldung per QR-Code",
         items: [
           "Ein Trainer öffnet im Kader-Reiter ein zeitlich begrenztes Anmeldefenster, standardmäßig 15 Minuten — zum Beispiel direkt im Training.",
-          "Der dabei erzeugte QR-Code führt zu einer schlanken Anmeldeseite: Spieler ohne eigenes Konto wählen ihren Namen aus dem Kader, vergeben ein Passwort und sind sofort angemeldet.",
-          "So muss der Trainer nicht jedes Konto einzeln anlegen."
+          "Der dabei erzeugte QR-Code führt zu einer schlanken Anmeldeseite; derselbe Link lässt sich stattdessen in die Mannschaftsgruppe schicken. Beides öffnet nur diesen einen Kader und läuft nach dem Fenster ab.",
+          "Auf der Anmeldeseite tippt der Spieler seinen Namen aus dem Kader an und vergibt ein Passwort — mindestens zwölf Zeichen mit Groß- und Kleinbuchstaben und einer Zahl oder einem Sonderzeichen. Danach ist er angemeldet. So muss der Trainer nicht jedes Konto einzeln anlegen.",
+          "Wer schon ein Konto hat, verknüpft es dort mit einem Klick, statt ein zweites anzulegen.",
+          "Während das Fenster offen ist, sieht der Trainer die Neuzugänge live mitlaufen und merkt sofort, wenn sich jemand als ein anderer einträgt."
         ]
       },
       {
         title: "Rollen und Rechte",
         items: [
-          "Kaderspieler können mehrere Rollen tragen: Trainer, Co-Trainer, Torwart- und Athletiktrainer, Betreuer, Kassenwart, Nachwuchsleiter, Fördertrainer und weitere — jeweils mit eigenen Verwaltungsrechten je Bereich.",
-          "Im Reiter „Einstellungen“ zeigt der Bereich „Rollen im Kader“ alle Kadermitglieder mit ihren Rollen auf einen Blick, mit Direktzugriff zum Bearbeiten.",
-          "Die Referenztabelle „Rollen-Rechte“ zeigt, welchen Bereich jede Rolle verwalten darf. Sie ist für Administratoren pflegbar.",
-          "Kadereinträge mit verknüpftem Konto zeigen zusätzlich Lizenz und betreute Mannschaften aus dem zentralen Trainerprofil — rein zur Information.",
-          "Spieler ohne Bearbeiten-Recht speichern trotzdem ihre eigenen Einträge: Zu- und Absage, eigene Aufgaben, Fahrgemeinschaft, Urlaub und Krankheit. Übertragen wird dabei nur die eigene Änderung, nicht die komplette Mannschaftsdatei.",
+          "Kaderspieler können mehrere Rollen gleichzeitig tragen: Admin, Trainer, Co-Trainer, TW-Trainer, AT-Trainer, Fördertrainer, Nachwuchsleiter, Betreuer, Kassenwart, Spieler und Inaktiv. Die Rechte mehrerer Rollen addieren sich.",
+          "Verwaltet wird nach Bereichen: Termine, Aufgaben, Aufstellungen, Trainingsgruppen, Spielberichte, Kader, Kasse, Urlaub/Krank sowie Mannschaften und Umfragen. Welche Rolle welchen Bereich verwalten darf, steht in der Tabelle „Rollen-Rechte“ im Reiter „Einstellungen“ und ist für Administratoren mit einem Häkchen änderbar — sofort und für alle Mannschaften.",
+          "Hat ein Kadermitglied noch gar keine Rolle bekommen, darf es vorübergehend überall mitverwalten. Erst eine zugewiesene Rolle schränkt gezielt ein — so bleibt eine Mannschaft nach dem Anlegen handlungsfähig, bevor die Rollen verteilt sind.",
+          "Der Bereich „Rollen im Kader“ zeigt alle Kadermitglieder mit ihren Rollen auf einen Blick, mit Direktzugriff zum Bearbeiten. Vergeben werden die Rollen am jeweiligen Spieler im Reiter „Kader“.",
+          "Kadereinträge mit verknüpftem Konto zeigen zusätzlich Lizenz und betreute Mannschaften aus dem zentralen Trainerprofil — rein zur Information, ohne Einfluss auf die Rechte.",
+          "Darüber liegen die drei Stufen der Tools-Übersicht. Sehen: alles ansehen, was zur eigenen Mannschaft gehört. Bearbeiten: verwalten, so weit die eigenen Rollen reichen. Administrieren: zusätzlich der Reiter „Einstellungen“ mit Mannschaften und Gruppen, der Rollenübersicht und der Rechte-Tabelle.",
+          "Spieler ohne Bearbeiten-Recht speichern trotzdem ihre eigenen Einträge: Zu- und Absage für kommende Termine, eigene Aufgaben, Fahrgemeinschaft, Urlaub und Krankheit. Übertragen wird dabei nur die eigene Änderung, nicht die komplette Mannschaftsdatei — den ganzen Stand zurückzuschreiben ist für sie auch auf dem Server gesperrt.",
           "In der Kasse sehen sie entsprechend nur ihre eigene offene Summe und ihre eigenen Buchungen, nicht den Kassenstand.",
           "Der Reiter „Info“ ist für alle sichtbar."
         ]
@@ -234,15 +164,16 @@ const APP_CHANGELOG = [
         items: [
           "Die Ansicht ist für das Handy gebaut — Zu- und Absagen funktionieren dort genauso wie am Rechner.",
           "Eingabefelder sind mindestens 16 Pixel groß, damit der iPhone-Browser beim Antippen nicht ungefragt in die Seite hineinzoomt und verschoben stehen bleibt.",
-          "Der Datei-Upload funktioniert auch auf älteren iPhones und iPads: die interne Datei-Kennung wird notfalls selbst im geforderten Format erzeugt. Zuvor schlug er dort mit „Ungültige Datei-Id“ fehl.",
+          "Der Datei-Upload funktioniert auch auf älteren iPhones und iPads: die interne Datei-Kennung wird notfalls selbst im geforderten Format erzeugt.",
           "Das Ziehen in der Aufstellung braucht eine Maus."
         ]
       },
       {
-        title: "Daten & Speicherung",
+        title: "Daten und Speicherung",
         items: [
           "Gespeichert wird in der Vereins-Nextcloud über die zentrale Anmeldung der Tools-Übersicht — ein eigenes Passwort braucht es nicht.",
-          "Ändern zwei Geräte gleichzeitig denselben Stand, erkennt die App das, lädt den fremden Stand nach und sagt Bescheid."
+          "Ändern zwei Geräte gleichzeitig denselben Stand, erkennt die App das, lädt den fremden Stand nach und sagt Bescheid.",
+          "Läuft die Anmeldung ab, während die App offen ist, erscheint der Hinweis „bitte neu anmelden“ — und der Bildschirm dahinter wird geräumt, samt aller Dialoge. Es bleibt kein Name und keine Eingabe stehen, in die sich jemand am selben Rechner hineinlesen könnte."
         ]
       }
     ]
