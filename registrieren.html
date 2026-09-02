@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>⚽ Anmelden – Kadermanager</title>
+<meta name="theme-color" content="#1a56a0" />
+<!-- Bewusst eigenes, schlankes CSS statt style.css der App: diese Seite wird von
+     Spielern auf dem Handy in der Kabine geöffnet, oft über mobile Daten, und
+     zeigt genau drei Schritte. Sie soll nicht 24 KB App-CSS laden, von dem sie
+     nichts braucht. Farben/Radien 1:1 aus style.css übernommen. -->
+<style>
+  :root {
+    --green: #2d8c4e; --green-light: #eaf6ef;
+    --red: #c0392b; --red-light: #fdecea;
+    --blue: #1a56a0; --blue-light: #e8f0fb;
+    --gray: #f4f5f7; --border: #dde1e8;
+    --text: #1e2330; --muted: #6b7280; --white: #ffffff;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--gray); color: var(--text);
+    display: flex; justify-content: center;
+  }
+  .wrap { width: 100%; max-width: 460px; }
+  .card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px; margin-bottom: 14px;
+  }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: 14px; margin: 0 0 16px; }
+  .logo { width: 56px; height: 56px; object-fit: contain; display: block; margin: 0 auto 10px; }
+  /* Auswahlliste: große Tap-Ziele (48px+), weil das auf einem Handy mit
+     Fußballschuhen an den Händen bedient wird, nicht mit der Maus. */
+  .spieler-btn {
+    display: block; width: 100%; text-align: left;
+    padding: 14px 16px; margin-bottom: 8px; min-height: 50px;
+    background: var(--white); border: 2px solid var(--border);
+    border-radius: var(--radius); font-size: 16px; font-weight: 600;
+    color: var(--text); cursor: pointer;
+  }
+  .spieler-btn:hover { border-color: var(--blue); background: var(--blue-light); }
+  .spieler-btn.gewaehlt { border-color: var(--blue); background: var(--blue-light); }
+  label { display: block; font-size: 14px; font-weight: 600; margin: 14px 0 6px; }
+  input[type="password"] {
+    width: 100%; padding: 12px 14px; font-size: 16px; /* 16px: verhindert Auto-Zoom auf iOS */
+    border: 1px solid var(--border); border-radius: 8px; background: var(--white); color: var(--text);
+  }
+  .btn {
+    width: 100%; padding: 14px; margin-top: 16px;
+    background: var(--blue); color: var(--white);
+    border: none; border-radius: 8px;
+    font-size: 16px; font-weight: 600; cursor: pointer;
+  }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .hinweis { font-size: 13px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+  .fehler {
+    background: var(--red-light); color: var(--red);
+    padding: 12px 14px; border-radius: 8px; font-size: 14px; margin-bottom: 12px;
+  }
+  .erfolg {
+    background: var(--green-light); color: var(--green);
+    padding: 12px 14px; border-radius: 8px; font-size: 15px; font-weight: 600;
+  }
+  .zeit { font-size: 13px; color: var(--muted); text-align: center; margin-top: 10px; }
+  .versteckt { display: none; }
+  .version-badge {
+    display: inline-block; background: var(--blue-light); color: var(--blue);
+    font-size: 11px; font-weight: 700; border-radius: 99px;
+    padding: 2px 9px; margin-left: 6px; vertical-align: middle;
+  }
+  nav {
+    display: flex; gap: 4px; width: 100%; max-width: 460px;
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 6px; margin-bottom: 14px;
+  }
+  nav button {
+    background: none; border: none; padding: 8px 14px;
+    font-size: 14px; font-weight: 600; color: var(--muted); cursor: pointer;
+    border-radius: 8px;
+  }
+  nav button:hover { background: var(--gray); }
+  nav button.active { color: var(--blue); background: var(--blue-light); }
+  .tab-section { display: none; }
+  .tab-section.active { display: block; }
+  .changelog-list { list-style: disc; padding-left: 20px; margin: 0;
+                    font-size: 14px; line-height: 1.6; color: var(--muted); text-align: left; }
+
+/* ---------------------------------------------------------------------
+   Datenschutzhinweis nach Art. 13 DSGVO
+   ---------------------------------------------------------------------
+   Bewusst aufklappbar: die Angaben muessen vollstaendig dastehen, duerfen
+   das Formular aber nicht zuschuetten. Zugeklappt ist der Standard --
+   Art. 13 verlangt, dass die Information verfuegbar ist, nicht dass sie
+   ungefragt zwei Bildschirme fuellt.
+
+   Die Farben tragen Rueckfallwerte, weil derselbe Block in mehreren Repos
+   der Flotte steht und die Variablennamen dort nicht ueberall gleich
+   heissen. Ohne den Fallback waere die Schrift in manchen Apps schwarz
+   auf weiss statt gedaempft. */
+.ds-block {
+  border: 1px solid var(--line, var(--border, #dfe3e8));
+  border-radius: 8px;
+  background: #fbfcfd;
+  margin: 14px 0 0;
+}
+.ds-block > summary {
+  cursor: pointer;
+  padding: 10px 12px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--blue, #1f4e9c);
+  list-style: none;
+}
+/* Das eigene Dreieck statt des nativen Markers: Safari auf aelteren
+   iOS-Geraeten rendert list-style an <summary> nicht zuverlaessig. */
+.ds-block > summary::-webkit-details-marker { display: none; }
+.ds-block > summary::before { content: "\25B8\00A0"; }
+.ds-block[open] > summary::before { content: "\25BE\00A0"; }
+.ds-inhalt {
+  padding: 0 12px 12px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--muted, #667085);
+}
+.ds-inhalt p { margin: 0 0 8px; }
+.ds-inhalt strong { color: var(--text, #1c2330); }
+.ds-inhalt ul { margin: 0 0 8px; padding-left: 18px; }
+.ds-inhalt li { margin: 2px 0; }
+.ds-inhalt a { color: var(--blue, #1f4e9c); }
+</style>
+</head>
+<body>
+<nav>
+  <button data-tab="anmelden" class="active">Anmelden</button>
+  <button data-tab="info" style="margin-left:auto;">Info</button>
+</nav>
+
+<div class="wrap">
+ <div class="tab-section active" id="tab-anmelden">
+
+  <div class="card">
+    <img src="https://sc1911heiligenstadt.github.io/logo.svg" alt="" class="logo" />
+    <h1 id="titel">Beim Kadermanager anmelden</h1>
+    <p class="sub" id="untertitel">Einen Moment…</p>
+    <div id="fehler" class="fehler versteckt"></div>
+  </div>
+
+  <!-- Schritt 1: Wer bist du? -->
+  <div class="card versteckt" id="schritt-spieler">
+    <h1>Wer bist du?</h1>
+    <p class="sub">Tippe auf deinen Namen.</p>
+    <div id="spieler-liste"></div>
+  </div>
+
+  <!-- Schritt 2a: schon angemeldet — bestätigen statt neues Konto anlegen.
+       Bewusst ein eigener Klick und keine stille Verknüpfung: das hier passiert im
+       Training auf herumgereichten Handys, und ein fremdes Token im Browser würde
+       den Kaderplatz sonst wortlos an den falschen Account hängen. -->
+  <div class="card versteckt" id="schritt-bestaetigen">
+    <h1>Schon angemeldet</h1>
+    <p class="sub">Dein Konto wird mit diesem Kaderplatz verbunden — ein zweites Konto brauchst du nicht.</p>
+    <p style="margin:0 0 4px;">Angemeldet als</p>
+    <p style="margin:0 0 4px;font-size:18px;font-weight:700;" id="bestaetigen-name"></p>
+    <button class="btn" id="btn-verknuepfen">Ja, das bin ich</button>
+    <p class="hinweis">Nicht du? <a href="#" id="btn-abmelden">Abmelden und eigenes Konto anlegen</a></p>
+  </div>
+
+  <!-- Schritt 2: Passwort -->
+  <div class="card versteckt" id="schritt-passwort">
+    <h1 id="pw-titel">Passwort wählen</h1>
+    <p class="sub">Damit meldest du dich künftig an. Merk es dir gut.</p>
+    <label for="pw1">Passwort</label>
+    <input type="password" id="pw1" autocomplete="new-password" />
+    <label for="pw2">Passwort wiederholen</label>
+    <input type="password" id="pw2" autocomplete="new-password" />
+    <p class="hinweis">Mindestens 12 Zeichen, mit Groß- und Kleinbuchstaben und einer Zahl oder einem Sonderzeichen. Tipp: Denk dir einen Satz aus, den nur du kennst.</p>
+    <!-- Information nach Art. 13 DSGVO. Steht beim Passwort-Schritt, weil hier
+         das Konto tatsaechlich entsteht. Der Kader besteht ueberwiegend aus
+         Minderjaehrigen -- deshalb der ausdrueckliche Absatz fuer Eltern. -->
+    <details class="ds-block">
+      <summary>Was mit deinen Daten geschieht (Information nach Art. 13 DSGVO)</summary>
+      <div class="ds-inhalt">
+        <p><strong>Verantwortlich</strong> ist der 1. SC 1911 Heiligenstadt,
+        Leineberg 2, 37308 Heilbad Heiligenstadt, Telefon 03606 612206,
+        <a href="mailto:info@sc1911-heiligenstadt.de">info@sc1911-heiligenstadt.de</a>.</p>
+
+        <p><strong>Wozu und auf welcher Grundlage:</strong> Mit dem Konto
+        verbindest du dich mit deinem Platz im Kader. Im Kadermanager
+        organisiert deine Mannschaft Trainings und Spiele — dort stehen dein
+        Name, deine Position und Rückennummer sowie deine Zu- und Absagen zu
+        Terminen. Das gehört zur Durchführung deiner Mitgliedschaft im Verein
+        (Art. 6 Abs. 1 lit. b DSGVO). Dein Passwort speichern wir nur
+        verschlüsselt und können es selbst nicht lesen.</p>
+
+        <p><strong>Wer die Daten sieht:</strong> Die Trainer und Mitglieder
+        deiner Mannschaft. Nicht die Öffentlichkeit und nicht andere
+        Mannschaften. Gespeichert wird auf Servern in Deutschland, die ein
+        Auftragsverarbeiter für uns betreibt.</p>
+
+        <p><strong>Wie lange:</strong> Solange du in der Mannschaft spielst.
+        Verlässt du den Verein, wird dein Kaderplatz entfernt.</p>
+
+        <p><strong>Für Eltern:</strong> Ist der Spieler minderjährig, üben Sie
+        seine Rechte aus. Wenn Sie Fragen zur Verarbeitung haben oder
+        möchten, dass wir die Daten Ihres Kindes löschen, wenden Sie sich an
+        die oben genannte Anschrift.</p>
+
+        <p><strong>Deine Rechte:</strong> Auskunft, Berichtigung, Löschung,
+        Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch
+        gegen die Verarbeitung. Beschweren kannst du dich beim Thüringer
+        Landesbeauftragten für den Datenschutz und die Informationsfreiheit.</p>
+
+        <p>Ausführlich steht das in der
+        <a href="https://www.sc1911-heiligenstadt.de/datenschutz/" target="_blank" rel="noopener">Datenschutzerklärung
+        des Vereins</a>.</p>
+      </div>
+    </details>
+
+    <button class="btn" id="btn-fertig">Konto anlegen</button>
+  </div>
+
+  <!-- Schritt 3: Fertig -->
+  <div class="card versteckt" id="schritt-fertig">
+    <div class="erfolg" id="fertig-text"></div>
+    <button class="btn" id="btn-weiter">Weiter zum Kadermanager</button>
+  </div>
+
+  <p class="zeit versteckt" id="zeit"></p>
+ </div>
+
+ <div class="tab-section" id="tab-info">
+   <div class="card">
+     <h1 style="font-size:18px;">Über die Anmeldung <span class="version-badge" id="version-badge-2"></span></h1>
+     <p class="sub">
+       Über diesen Link verbindest du dich einmalig mit deinem Kaderplatz und legst dein
+       Passwort fest. Danach meldest du dich ganz normal im Kadermanager an.
+     </p>
+   </div>
+   <div class="card">
+     <h1 style="font-size:18px;">Änderungen</h1>
+     <ul class="changelog-list" id="changelog-list"></ul>
+   </div>
+ </div>
+</div>
+
+<script>
+// Standalone-Seite: bewusst ohne db.js/app.js. Der Spieler hat hier noch KEIN
+// Konto und keine Sitzung -- das Registrierungs-Token aus dem Link ist alles,
+// was er hat. Deshalb auch nur die drei km-reg-*-Aktionen, kein Gateway-Load.
+const GATEWAY_URL = "https://landingpage.michel-brunner.workers.dev";
+const TOKEN_STORAGE_KEY = "tu_session_token";
+
+// Token aus dem Hash, nicht aus dem Query-String: der Fragment-Teil wird von
+// Browsern NICHT an den Server geschickt und landet damit nicht in fremden
+// Zugriffslogs oder im Referer, wenn die Seite später weiterverlinkt.
+const regToken = decodeURIComponent((location.hash || "").replace(/^#/, "").trim());
+
+let gewaehlterSpieler = null;
+let ablaufAt = 0;
+// Gesetzt, wenn im Browser schon eine gültige Sitzung liegt (typisch: ein Torhüter,
+// der bereits in seiner Mannschaft steht und sich zusätzlich für die Torwartgruppe
+// einträgt). Dann wird nur verknüpft statt ein zweites Konto anzulegen.
+let angemeldetAls = null;
+
+const $ = (id) => document.getElementById(id);
+const zeige = (id, an) => $(id).classList.toggle("versteckt", !an);
+
+function fehler(text) {
+  const el = $("fehler");
+  el.textContent = text;
+  el.classList.remove("versteckt");
+}
+
+async function api(action, payload) {
+  const headers = { "Content-Type": "application/json" };
+  // Nur mitschicken, wenn vorhanden -- die Erstanmeldung eines echten Neulings hat
+  // keinen Token, und der Server behandelt beide Fälle bewusst unterschiedlich.
+  let token = null;
+  try { token = localStorage.getItem(TOKEN_STORAGE_KEY); } catch (_) {}
+  if (token) headers["Authorization"] = "Bearer " + token;
+  const resp = await fetch(GATEWAY_URL, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ action, ...payload })
+  });
+  const data = await resp.json().catch(() => ({}));
+  if (!resp.ok) throw new Error(data.error || ("Fehler " + resp.status));
+  return data;
+}
+
+function starteCountdown() {
+  const el = $("zeit");
+  el.classList.remove("versteckt");
+  const tick = () => {
+    const restMs = ablaufAt - Date.now();
+    if (restMs <= 0) {
+      el.textContent = "Der Anmelde-Link ist abgelaufen.";
+      return;
+    }
+    const min = Math.floor(restMs / 60000);
+    const sek = Math.floor((restMs % 60000) / 1000);
+    el.textContent = `Noch ${min}:${String(sek).padStart(2, "0")} Minuten Zeit`;
+    setTimeout(tick, 1000);
+  };
+  tick();
+}
+
+async function start() {
+  if (!regToken) {
+    $("untertitel").textContent = "";
+    fehler("Dieser Link ist unvollständig. Bitte scanne den QR-Code deines Trainers noch einmal.");
+    return;
+  }
+  // Ein abgelaufenes oder fremdes Token darf die Anmeldung eines echten Neulings
+  // nicht kaputtmachen -- der 401 wird deshalb still verworfen, nicht angezeigt.
+  try {
+    const ich = await api("me", {});
+    const name = `${ich.vorname || ""} ${ich.nachname || ""}`.trim();
+    angemeldetAls = { username: ich.username, name: name || ich.username };
+  } catch (_) {
+    angemeldetAls = null;
+  }
+
+  try {
+    const info = await api("km-reg-info", { token: regToken });
+    $("titel").textContent = info.teamName || "Kadermanager";
+    $("untertitel").textContent = "Melde dich für deine Mannschaft an.";
+    ablaufAt = info.expiresAt || 0;
+    if (ablaufAt) starteCountdown();
+
+    if (!info.spieler || info.spieler.length === 0) {
+      fehler("In diesem Kader ist gerade kein Platz mehr frei. Sprich bitte deinen Trainer an.");
+      return;
+    }
+    const liste = $("spieler-liste");
+    info.spieler.forEach((s) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "spieler-btn";
+      btn.textContent = s.name;
+      btn.addEventListener("click", () => {
+        gewaehlterSpieler = s;
+        Array.from(liste.children).forEach((c) => c.classList.remove("gewaehlt"));
+        btn.classList.add("gewaehlt");
+        const schritt = angemeldetAls ? "schritt-bestaetigen" : "schritt-passwort";
+        if (angemeldetAls) {
+          $("bestaetigen-name").textContent = angemeldetAls.name;
+        } else {
+          $("pw-titel").textContent = `Hallo ${s.name.split(" ")[0]}!`;
+        }
+        zeige(schritt, true);
+        $(schritt).scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      liste.appendChild(btn);
+    });
+    zeige("schritt-spieler", true);
+  } catch (e) {
+    $("untertitel").textContent = "";
+    fehler(e.message);
+  }
+}
+
+// Bereits angemeldet: nur verknüpfen, kein Passwort. Der Server erkennt das am
+// mitgeschickten Bearer-Token und legt dann kein zweites Konto an.
+$("btn-verknuepfen").addEventListener("click", async () => {
+  $("fehler").classList.add("versteckt");
+  if (!gewaehlterSpieler) { fehler("Bitte wähle zuerst deinen Namen aus."); return; }
+
+  const btn = $("btn-verknuepfen");
+  btn.disabled = true;
+  btn.textContent = "Wird verbunden…";
+  try {
+    const res = await api("km-reg-abschliessen", { token: regToken, spielerId: gewaehlterSpieler.id });
+    zeigeFertig(res);
+  } catch (e) {
+    fehler(e.message);
+    btn.disabled = false;
+    btn.textContent = "Ja, das bin ich";
+  }
+});
+
+$("btn-abmelden").addEventListener("click", (e) => {
+  e.preventDefault();
+  try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (_) {}
+  angemeldetAls = null;
+  zeige("schritt-bestaetigen", false);
+  $("pw-titel").textContent = `Hallo ${gewaehlterSpieler.name.split(" ")[0]}!`;
+  zeige("schritt-passwort", true);
+  $("schritt-passwort").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+function zeigeFertig(res) {
+  zeige("schritt-spieler", false);
+  zeige("schritt-passwort", false);
+  zeige("schritt-bestaetigen", false);
+  zeige("zeit", false);
+  const vorname = gewaehlterSpieler.name.split(" ")[0];
+  let text;
+  if (!res.verknuepft) {
+    text = res.hinweis || "Dein Konto ist angelegt.";
+  } else if (angemeldetAls) {
+    // Bestehendes Konto: der Benutzername ist bereits bekannt, dafür ist die neue
+    // Zugehörigkeit die eigentliche Nachricht.
+    text = `Fertig, ${vorname}! Du gehörst jetzt auch zu „${res.teamName || "dieser Mannschaft"}“.`;
+  } else {
+    text = `Fertig, ${vorname}! Dein Benutzername ist „${res.username}“.`;
+  }
+  $("fertig-text").textContent = text;
+  zeige("schritt-fertig", true);
+}
+
+$("btn-fertig").addEventListener("click", async () => {
+  $("fehler").classList.add("versteckt");
+  const pw1 = $("pw1").value;
+  const pw2 = $("pw2").value;
+  if (pw1 !== pw2) { fehler("Die beiden Passwörter sind nicht gleich."); return; }
+  if (!gewaehlterSpieler) { fehler("Bitte wähle zuerst deinen Namen aus."); return; }
+
+  const btn = $("btn-fertig");
+  btn.disabled = true;
+  btn.textContent = "Wird angelegt…";
+  try {
+    const res = await api("km-reg-abschliessen", {
+      token: regToken, spielerId: gewaehlterSpieler.id, password: pw1
+    });
+    // Session-Token in denselben Storage-Key wie alle Tools -- der Spieler ist
+    // damit sofort angemeldet und muss sich nicht direkt nochmal einloggen.
+    try { localStorage.setItem(TOKEN_STORAGE_KEY, res.token); } catch (_) {}
+    zeigeFertig(res);
+  } catch (e) {
+    fehler(e.message);
+    btn.disabled = false;
+    btn.textContent = "Konto anlegen";
+  }
+});
+
+$("btn-weiter").addEventListener("click", () => { location.href = "index.html"; });
+
+start();
+
+// ---------- Info-Tab / Versionshistorie ----------
+const APP_VERSION = '1.0';
+const APP_CHANGELOG = [
+  'Anmeldung über den persönlichen Link, ohne vorher ein Konto zu brauchen',
+  'Eigenen Namen aus der Kaderliste antippen statt abtippen',
+  'Wer schon ein Konto hat, verknüpft es per Klick statt ein zweites anzulegen',
+  'Passwort selbst wählen, mit Prüfung auf ausreichende Länge und Zeichenmischung'
+];
+function activateTab(name) {
+  document.querySelectorAll('nav button[data-tab]').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  document.querySelectorAll('.tab-section').forEach(s => s.classList.toggle('active', s.id === 'tab-' + name));
+}
+(function setupInfoTab() {
+  document.getElementById('version-badge-2').textContent = 'v' + APP_VERSION;
+  document.getElementById('changelog-list').innerHTML = APP_CHANGELOG.map(c => '<li>' + c + '</li>').join('');
+  document.querySelectorAll('nav button[data-tab]').forEach(b => {
+    b.addEventListener('click', () => activateTab(b.dataset.tab));
+  });
+})();
+</script>
+</body>
+</html>

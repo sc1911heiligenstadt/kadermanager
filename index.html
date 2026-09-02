@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>⚽ Kadermanager</title>
+<meta name="theme-color" content="#1a56a0" />
+<link rel="stylesheet" href="style.css?v=1.0" />
+</head>
+<body>
+
+  <div class="connect-screen" id="connect-screen">
+    <div class="card">
+      <h2>⚽ Kadermanager</h2>
+      <p id="connect-message">Bitte über die Tools-Übersicht anmelden, um die Teamorganisation zu sehen.</p>
+      <div class="btn-row">
+        <a class="btn" href="https://sc1911heiligenstadt.github.io/ToolsUebersicht/">Zur Tools-Übersicht</a>
+      </div>
+      <p class="muted" id="cloud-error" style="margin-top:14px;"></p>
+    </div>
+  </div>
+
+  <div id="app-shell" style="display:none;">
+    <header>
+      <h1>⚽ Kadermanager</h1>
+      <a href="https://sc1911heiligenstadt.github.io/ToolsUebersicht/" class="back-to-dashboard">← Zurück zum Dashboard</a>
+      <div class="header-right">
+        <label class="season-picker">Mannschaft
+          <select id="team-select"></select>
+        </label>
+        <span class="header-status" id="save-status"></span>
+        <span class="header-user" id="header-user"></span>
+        <img class="header-logo" src="https://sc1911heiligenstadt.github.io/logo.svg" alt="1. SC 1911 Heiligenstadt e.V." />
+      </div>
+    </header>
+
+    <nav>
+      <button data-tab="termine" class="active">Termine</button>
+      <button data-tab="kader">Kader</button>
+      <button data-tab="statistik">Statistik</button>
+      <button data-tab="umfragen">Umfragen</button>
+      <button data-tab="kasse">Kasse</button>
+      <div class="nav-right">
+        <button data-tab="einstellungen">Einstellungen</button>
+        <button data-tab="info">Info</button>
+      </div>
+    </nav>
+
+    <main>
+
+      <!-- ---------- Termine ---------- -->
+      <section class="tab-section active" id="tab-termine">
+        <div class="toolbar">
+          <div class="day-switch" id="termine-filter">
+            <button data-filter="kommend" class="active">Kommende</button>
+            <button data-filter="vergangen">Vergangene</button>
+          </div>
+          <div class="toolbar-right">
+            <button class="btn small secondary" id="btn-urlaub-krank">Urlaub/Krank</button>
+            <button class="btn small editor-only hidden" id="btn-new-termin" data-bereich="termine">+ Termin</button>
+          </div>
+        </div>
+        <div id="termine-list"></div>
+        <div class="empty-state hidden" id="termine-empty">Für diese Mannschaft sind noch keine Termine erfasst.</div>
+        <div class="empty-state hidden" id="no-team-termine">Noch keine Mannschaft angelegt — im Tab „Einstellungen“ eine Mannschaft erstellen.</div>
+      </section>
+
+      <!-- ---------- Kader ---------- -->
+      <section class="tab-section" id="tab-kader">
+        <div class="card" id="kader-claim-hint">
+          <p class="muted" id="kader-claim-text"></p>
+        </div>
+        <div class="toolbar">
+          <h2 style="margin:0;color:var(--blue);font-size:17px;" id="kader-title">Kader</h2>
+          <div class="toolbar-right">
+            <button class="btn secondary small editor-only hidden" id="btn-reg-oeffnen" data-bereich="kader">📱 Spieler anmelden</button>
+            <button class="btn small editor-only hidden" id="btn-new-spieler" data-bereich="kader">+ Spieler</button>
+          </div>
+        </div>
+        <!-- Registrierungsfenster: erscheint nur nach Klick auf „Spieler anmelden“.
+             Der Trainer zeigt den QR im Training oder teilt den Link in die
+             Mannschaftsgruppe; beides trägt dasselbe kurzlebige Token. -->
+        <div class="card hidden" id="reg-panel">
+          <div class="toolbar" style="margin-bottom:10px;">
+            <h2 style="margin:0;color:var(--blue);font-size:16px;">Spieler anmelden</h2>
+            <div class="toolbar-right">
+              <button class="btn secondary small" id="btn-reg-schliessen">Schließen</button>
+            </div>
+          </div>
+          <div id="reg-inhalt"></div>
+        </div>
+        <div id="kader-list"></div>
+        <div class="empty-state hidden" id="kader-empty">Noch keine Spieler im Kader.</div>
+        <div class="empty-state hidden" id="no-team-kader">Noch keine Mannschaft angelegt — im Tab „Einstellungen“ eine Mannschaft erstellen.</div>
+      </section>
+
+      <!-- ---------- Statistik ---------- -->
+      <section class="tab-section" id="tab-statistik">
+        <div class="card">
+          <div class="filter-bar">
+            <label class="season-picker" style="color:var(--text);">Zeitraum
+              <select id="statistik-jahr"></select>
+            </label>
+            <span class="filter-count" id="statistik-count"></span>
+          </div>
+          <p class="muted" style="margin-bottom:14px;">Grundlage ist der Zu-/Absage-Status vergangener Termine. „Quote“ = Zusagen geteilt durch die Termine, zu denen der Spieler sich gemeldet hat (offen zählt nicht mit).</p>
+          <div class="table-scroll" id="statistik-wrap"></div>
+          <div class="empty-state hidden" id="statistik-empty">Noch keine vergangenen Termine für eine Auswertung.</div>
+        </div>
+        <div class="empty-state hidden" id="no-team-statistik">Noch keine Mannschaft angelegt — im Tab „Einstellungen“ eine Mannschaft erstellen.</div>
+      </section>
+
+      <!-- ---------- Umfragen ---------- -->
+      <section class="tab-section" id="tab-umfragen">
+        <div class="toolbar">
+          <h2 style="margin:0;color:var(--blue);font-size:17px;">Umfragen</h2>
+          <div class="toolbar-right">
+            <button class="btn small editor-only hidden" id="btn-new-umfrage" data-bereich="team">+ Umfrage</button>
+          </div>
+        </div>
+        <div id="umfragen-list"></div>
+        <div class="empty-state hidden" id="umfragen-empty">Noch keine Umfragen.</div>
+        <div class="empty-state hidden" id="no-team-umfragen">Noch keine Mannschaft angelegt — im Tab „Einstellungen“ eine Mannschaft erstellen.</div>
+      </section>
+
+      <!-- ---------- Kasse ---------- -->
+      <section class="tab-section" id="tab-kasse">
+        <div class="summary-cards" id="kasse-summary"></div>
+        <div class="card">
+          <div class="toolbar">
+            <h2 style="margin:0;color:var(--blue);font-size:17px;">Buchungen</h2>
+            <div class="toolbar-right">
+              <button class="btn small editor-only hidden" id="btn-new-buchung" data-bereich="kasse">+ Buchung</button>
+            </div>
+          </div>
+          <div class="day-switch" id="kasse-kategorie-filter" style="margin-bottom:10px;">
+            <button data-kategorie="alle" class="active">Alle</button>
+            <button data-kategorie="beitrag">Beiträge</button>
+            <button data-kategorie="strafe">Strafen</button>
+            <button data-kategorie="sonstiges">Sonstiges</button>
+          </div>
+          <label class="checkbox-row" style="margin-bottom:10px;"><input type="checkbox" id="kasse-stornos-toggle" /> Stornos anzeigen</label>
+          <div class="table-scroll" id="buchungen-wrap"></div>
+          <div class="empty-state hidden" id="buchungen-empty">Noch keine Buchungen.</div>
+        </div>
+        <div class="card">
+          <div class="toolbar">
+            <h2 style="margin:0;color:var(--blue);font-size:17px;">Strafenkatalog</h2>
+            <div class="toolbar-right">
+              <button class="btn small secondary editor-only hidden" id="btn-add-strafe" data-bereich="kasse">+ Eintrag</button>
+            </div>
+          </div>
+          <div id="strafenkatalog-list"></div>
+        </div>
+        <div class="card">
+          <h2>Offene Beträge je Spieler</h2>
+          <div class="table-scroll" id="kasse-salden-wrap"></div>
+        </div>
+        <div class="empty-state hidden" id="no-team-kasse">Noch keine Mannschaft angelegt — im Tab „Einstellungen“ eine Mannschaft erstellen.</div>
+      </section>
+
+      <!-- ---------- Info ---------- -->
+      <section class="tab-section" id="tab-info">
+        <div class="card">
+          <h2>Über den Kadermanager <span class="version-badge" id="version-badge-2"></span></h2>
+          <p class="muted">
+            Termine, Kader, Umfragen und Mannschaftskasse — die Vereinsalternative zu SpielerPlus.
+            Zu jedem Termin wird zu- oder abgesagt, die Statistik zeigt, wer wie oft dabei war, und die
+            Kasse führt die offenen Beträge je Spieler. Abwesenheiten laufen über „Urlaub/Krank“:
+            einmal eingetragen, gilt der Zeitraum für alle Termine darin. Spieler und Eltern ohne
+            Vereinskonto fordern ihren Zugang über die Registrierungsseite an — er gilt dann nur für
+            ihre Mannschaft.
+          </p>
+          <div class="form-grid" id="meta-view"></div>
+          <p class="muted" id="einstellungen-user" style="margin-top:10px;"></p>
+        </div>
+        <div class="card">
+          <h2>Änderungen</h2>
+          <div id="changelog-list"></div>
+        </div>
+      
+      <div class="card" id="ds-info-karte">
+        <h2>Datenschutz</h2>
+        <p>Dieses Werkzeug gehört zu den internen Anwendungen des
+        1. SC 1911 Heiligenstadt. Die hier erfassten Daten werden
+        ausschließlich für die Vereinsarbeit verwendet und liegen auf Servern
+        in Deutschland, die ein Auftragsverarbeiter für den Verein betreibt.
+        Eine Weitergabe an Dritte findet nur statt, soweit sie für den
+        jeweiligen Zweck erforderlich oder gesetzlich vorgeschrieben ist.</p>
+        <p>Verantwortlich ist der 1. SC 1911 Heiligenstadt, Leineberg 2,
+        37308 Heilbad Heiligenstadt, Telefon 03606 612206,
+        <a href="mailto:info@sc1911-heiligenstadt.de">info@sc1911-heiligenstadt.de</a>.
+        Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung,
+        Datenübertragbarkeit und Widerspruch lassen sich unter dieser
+        Anschrift geltend machen. Beschwerden nimmt der Thüringer
+        Landesbeauftragte für den Datenschutz und die Informationsfreiheit
+        entgegen.</p>
+        <p><a href="https://www.sc1911-heiligenstadt.de/datenschutz/" target="_blank" rel="noopener">Datenschutzerklärung des Vereins</a>
+        &middot;
+        <a href="https://www.sc1911-heiligenstadt.de/impressum-2/" target="_blank" rel="noopener">Impressum</a></p>
+      </div>
+</section>
+
+      <!-- ---------- Einstellungen ---------- -->
+      <section class="tab-section" id="tab-einstellungen">
+        <div class="card">
+          <div class="toolbar">
+            <h2 style="margin:0;color:var(--blue);font-size:17px;">Mannschaften &amp; Gruppen</h2>
+            <div class="toolbar-right">
+              <button class="btn small editor-only hidden" id="btn-new-team" data-bereich="team">+ Mannschaft/Gruppe</button>
+            </div>
+          </div>
+          <div id="team-admin-list"></div>
+          <p class="muted editor-only hidden" id="team-admin-empty" style="margin-top:8px;">Noch keine Mannschaft — oben „+ Mannschaft/Gruppe“ anlegen.</p>
+        </div>
+        <div class="card">
+          <h2 id="rechte-kader-title">Rollen im Kader</h2>
+          <p class="muted" style="margin-bottom:10px;">Rollen werden am jeweiligen Spieler im Kader-Tab vergeben — hier alle auf einen Blick, mit Direktzugriff zum Bearbeiten.</p>
+          <div class="table-scroll" id="rechte-kader-wrap"></div>
+          <p class="muted hidden" id="no-team-rechte" style="margin-top:8px;">Noch keine Mannschaft angelegt — oben unter „Mannschaften“ eine Mannschaft erstellen.</p>
+        </div>
+        <div class="card">
+          <h2>Rollen-Rechte</h2>
+          <p class="muted" style="margin-bottom:10px;">Welchen Bereich eine Rolle verwalten darf. Hat ein Spieler noch keine Rolle zugewiesen, darf er vorübergehend überall mitverwalten — erst eine zugewiesene Rolle schränkt gezielt ein.</p>
+          <p class="muted hidden" id="rechte-matrix-admin-hint" style="margin-top:-6px; margin-bottom:10px;">Häkchen setzen/entfernen, um einer Rolle einen Bereich zu geben oder zu entziehen — wirkt sofort mannschaftsübergreifend für alle Nutzer.</p>
+          <div class="table-scroll" id="rechte-matrix-wrap"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ---------- Mannschaft-Formular ---------- -->
+  <div class="modal-overlay hidden" id="team-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="team-modal-title">Neue Mannschaft</h2>
+        <button class="modal-close" id="team-modal-close" aria-label="Schließen">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="team-form">
+          <div class="form-grid">
+            <div class="form-field wide">
+              <label>Art</label>
+              <div class="day-switch" id="tf-typ">
+                <button type="button" data-typ="mannschaft" class="active">Mannschaft</button>
+                <button type="button" data-typ="gruppe">Gruppe</button>
+              </div>
+              <p class="muted" id="tf-typ-hinweis" style="margin:6px 0 0;font-size:13px;"></p>
+            </div>
+            <!-- datalist: die Mannschaften des Vereins zur Auswahl, aber ein
+                 eigener Name bleibt tippbar (bewusst kein <select>).
+                 ⚠️ Das list-Attribut setzt setTeamModalTyp() — bei einer GRUPPE
+                 (Torwartgruppe, Athletikgruppe) wäre eine Mannschaft als
+                 Vorschlag genau falsch. -->
+            <div class="form-field">
+              <label>Name *</label>
+              <input type="text" id="tf-name" list="vereins-mannschaften" placeholder="z. B. B1" autocomplete="off" />
+              <datalist id="vereins-mannschaften"></datalist>
+            </div>
+            <div class="form-field"><label>Farbe</label><input type="color" id="tf-farbe" value="#1a56a0" /></div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn danger hidden" id="btn-delete-team">Löschen</button>
+        <div class="btn-row">
+          <button class="btn secondary" id="btn-cancel-team">Abbrechen</button>
+          <button class="btn success" id="btn-save-team">Speichern</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- Spieler-Formular ---------- -->
+  <div class="modal-overlay hidden" id="spieler-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="spieler-modal-title">Neuer Spieler</h2>
+        <button class="modal-close" id="spieler-modal-close" aria-label="Schließen">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="spieler-form">
+          <div class="form-field wide hidden" id="pf-uebernehmen-wrap">
+            <label for="pf-uebernehmen">Aus bestehender Mannschaft übernehmen</label>
+            <select id="pf-uebernehmen"></select>
+            <p class="muted" style="margin:6px 0 0;font-size:13px;">Übernimmt Name und Kontoverknüpfung, damit der Spieler in beiden Kadern dieselbe Person ist.</p>
+          </div>
+          <div class="form-grid">
+            <div class="form-field"><label>Name *</label><input type="text" id="pf-name" placeholder="Vor- und Nachname" /></div>
+            <div class="form-field"><label>Position</label><input type="text" id="pf-position" placeholder="z. B. Tor, Abwehr" /></div>
+            <div class="form-field"><label>Rückennummer</label><input type="number" id="pf-nummer" min="0" placeholder="optional" /></div>
+          </div>
+          <div class="form-field wide">
+            <label>Foto</label>
+            <div class="foto-upload-row">
+              <div class="foto-preview" id="pf-foto-preview">?</div>
+              <div class="foto-upload-actions">
+                <label class="btn small secondary foto-upload-label">
+                  Foto wählen…
+                  <input type="file" id="pf-foto-input" accept="image/*" class="hidden-file-input" />
+                </label>
+                <button type="button" class="btn small secondary hidden" id="btn-remove-foto">Foto entfernen</button>
+                <span class="foto-upload-status" id="pf-foto-status"></span>
+              </div>
+            </div>
+          </div>
+          <div class="form-field wide">
+            <label>Verknüpftes Konto (Tools-Übersicht-Nutzername)</label>
+            <input type="text" id="pf-linked" placeholder="optional — meist per „Das bin ich“ vom Spieler selbst" />
+          </div>
+          <div class="form-field wide">
+            <label>Rollen</label>
+            <div class="rollen-checks" id="pf-rollen"></div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn danger hidden" id="btn-delete-spieler">Löschen</button>
+        <div class="btn-row">
+          <button class="btn secondary" id="btn-cancel-spieler">Abbrechen</button>
+          <button class="btn success" id="btn-save-spieler">Speichern</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- Termin-Formular ---------- -->
+  <div class="modal-overlay hidden" id="termin-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="termin-modal-title">Neuer Termin</h2>
+        <button class="modal-close" id="termin-modal-close" aria-label="Schließen">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="termin-form">
+          <div class="form-grid">
+            <div class="form-field"><label>Art *</label><select id="ef-typ"></select></div>
+            <div class="form-field"><label>Titel</label><input type="text" id="ef-titel" placeholder="optional (z. B. Testspiel)" /></div>
+            <div class="form-field"><label>Datum *</label><input type="date" id="ef-datum" /></div>
+            <div class="form-field"><label>Von</label><input type="time" id="ef-startzeit" /></div>
+            <div class="form-field"><label>Bis</label><input type="time" id="ef-endzeit" /></div>
+            <div class="form-field"><label>Ort</label><input type="text" id="ef-ort" placeholder="z. B. Sportplatz Heiligenstadt" /></div>
+            <div class="form-field" id="ef-gegner-field"><label>Gegner</label><input type="text" id="ef-gegner" placeholder="nur bei Spielen" /></div>
+            <div class="form-field"><label>Treffpunkt</label><input type="text" id="ef-treffpunkt" placeholder="z. B. 30 Min. vorher" /></div>
+          </div>
+          <div class="form-field wide"><label>Notiz</label><input type="text" id="ef-notiz" placeholder="optional" /></div>
+          <div class="form-field wide"><label>Video-Link</label><input type="url" id="ef-video" placeholder="optional, z. B. YouTube-Link" /></div>
+          <div id="ef-zyklisch-wrap">
+            <label class="checkbox-row" style="margin-top:10px;"><input type="checkbox" id="ef-zyklisch" /> Wöchentlich wiederholen</label>
+            <div class="form-field hidden" id="ef-wochen-field" style="max-width:200px;margin-top:10px;">
+              <label>Anzahl Wochen</label>
+              <input type="number" id="ef-wochen" min="2" max="52" placeholder="z. B. 10" />
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn danger hidden" id="btn-delete-termin">Löschen</button>
+        <div class="btn-row">
+          <button class="btn secondary" id="btn-cancel-termin">Abbrechen</button>
+          <button class="btn success" id="btn-save-termin">Speichern</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- Termin-Detail (Teilnahme je Spieler) ---------- -->
+  <div class="modal-overlay hidden" id="detail-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="detail-modal-title">Termin</h2>
+        <button class="modal-close" id="detail-modal-close" aria-label="Schließen">×</button>
+      </div>
+      <div class="modal-body">
+        <div id="detail-context" class="detail-context"></div>
+        <div id="detail-self"></div>
+        <h3 class="detail-subhead">Rückmeldungen</h3>
+        <div id="detail-teilnahme"></div>
+
+        <h3 class="detail-subhead">Aufstellung</h3>
+        <div class="aufstellung-wrap">
+          <div class="spielfeld" id="spielfeld">
+            <div class="spielfeld-mittellinie"></div>
+            <div class="spielfeld-mittelkreis"></div>
+            <div class="spielfeld-strafraum oben"></div>
+            <div class="spielfeld-strafraum unten"></div>
+          </div>
+          <div class="aufstellung-zone">
+            <div class="az-title">Bank</div>
+            <div class="az-chips" id="aufstellung-bank"></div>
+          </div>
+          <div class="aufstellung-zone">
+            <div class="az-title">Nicht nominiert</div>
+            <div class="az-chips" id="aufstellung-pool"></div>
+          </div>
+        </div>
+
+        <h3 class="detail-subhead">Aufgaben</h3>
+        <div id="detail-aufgaben"></div>
+        <div class="inline-add-row editor-only hidden" id="aufgabe-add-row" data-bereich="aufgaben">
+          <input type="text" id="af-text" placeholder="Neue Aufgabe, z. B. Bälle mitbringen" />
+          <select id="af-spieler" multiple size="3"></select>
+          <button type="button" class="btn small secondary" id="btn-add-aufgabe">+ Aufgabe</button>
+        </div>
+
+        <h3 class="detail-subhead">Trainingsgruppen</h3>
+        <div id="detail-gruppen"></div>
+        <div class="inline-add-row editor-only hidden" id="gruppe-add-row" data-bereich="gruppen">
+          <input type="text" id="gf-name" placeholder="Name, z. B. Torhüter" />
+          <select id="gf-spieler" multiple size="3"></select>
+          <button type="button" class="btn small secondary" id="btn-add-gruppe">+ Trainingsgruppe</button>
+        </div>
+
+        <div id="detail-spielbericht-wrap" class="hidden">
+          <h3 class="detail-subhead">Spielbericht</h3>
+          <div class="form-grid">
+            <div class="form-field"><label>Tore eigene Mannschaft</label><input type="number" id="sb-eigene" min="0" /></div>
+            <div class="form-field"><label>Tore Gegner</label><input type="number" id="sb-gegner" min="0" /></div>
+          </div>
+          <div class="form-field wide"><label>Bericht</label><textarea id="sb-bericht" rows="3" placeholder="optional"></textarea></div>
+          <div class="form-field wide">
+            <label>Torschützen</label>
+            <div id="detail-torschuetzen"></div>
+            <div class="inline-add-row editor-only hidden" id="torschuetze-add-row" data-bereich="spielberichte">
+              <select id="tf-spieler"></select>
+              <input type="number" id="tf-anzahl" min="1" value="1" style="max-width:80px;" />
+              <button type="button" class="btn small secondary" id="btn-add-torschuetze">+ Tor</button>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="detail-subhead">Fahrgemeinschaft</h3>
+        <div id="detail-fahrgemeinschaft"></div>
+        <div class="inline-add-row hidden" id="fg-self-row">
+          <input type="number" id="fg-plaetze" min="1" value="1" style="max-width:80px;" />
+          <button type="button" class="btn small secondary" id="btn-fg-anbieten">Plätze anbieten</button>
+          <button type="button" class="btn small secondary" id="btn-fg-suchen">Platz suchen</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn danger editor-only hidden" id="btn-delete-termin-detail">Löschen</button>
+        <div class="btn-row">
+          <button class="btn secondary editor-only hidden" id="btn-edit-termin-detail">Bearbeiten</button>
+          <button class="btn" id="btn-close-detail">Schließen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- Umfrage-Formular ---------- -->
+  <div class="modal-overlay hidden" id="umfrage-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="umfrage-modal-title">Neue Umfrage</h2>
+        <button class="modal-close" id="umfrage-modal-close" aria-label="Schließen">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="umfrage-form">
+          <div class="form-field wide"><label>Frage *</label><input type="text" id="uf-frage" placeholder="z. B. Grillfest — wer kommt?" /></div>
+          <div class="form-field wide">
+            <label>Antwortoptionen *</label>
+            <div id="uf-optionen"></div>
+            <button type="button" class="btn small secondary" id="btn-add-option" style="margin-top:8px;">+ Option</button>
+          </div>
+          <label class="checkbox-row" style="margin-top:6px;"><input type="checkbox" id="uf-mehrfach" /> Mehrfachauswahl erlauben</label>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn danger hidden" id="btn-delete-umfrage">Löschen</button>
+        <div class="btn-row">
+          <button class="btn secondary" id="btn-cancel-umfrage">Abbrechen</button>
+          <button class="btn success" id="btn-save-umfrage">Speichern</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- Buchung-Formular (Kasse) ---------- -->
+  <div class="modal-overlay hidden" id="buchung-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="buchung-modal-title">Neue Buchung</h2>
+        <button class="modal-close" id="buchung-modal-close" aria-label="Schließen">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="buchung-form">
+          <div class="form-grid">
+            <div class="form-field wide"><label>Vorlage aus Strafenkatalog</label><select id="bf-vorlage"></select></div>
+            <div class="form-field"><label>Spieler</label><select id="bf-spieler"></select></div>
+            <div class="form-field"><label>Art</label><select id="bf-richtung">
+              <option value="ein">Einnahme (Strafe / Beitrag / Einzahlung)</option>
+              <option value="aus">Ausgabe</option>
+            </select></div>
+            <div class="form-field"><label>Kategorie</label><select id="bf-kategorie">
+              <option value="sonstiges">Sonstiges</option>
+              <option value="beitrag">Beitrag</option>
+              <option value="strafe">Strafe</option>
+            </select></div>
+            <div class="form-field"><label>Betrag (€) *</label><input type="number" id="bf-betrag" min="0" step="0.01" placeholder="0,00" /></div>
+            <div class="form-field"><label>Datum</label><input type="date" id="bf-datum" /></div>
+          </div>
+          <div class="form-field wide"><label>Bezeichnung *</label><input type="text" id="bf-bezeichnung" placeholder="z. B. Zu spät zum Training" /></div>
+          <label class="checkbox-row" style="margin-top:6px;"><input type="checkbox" id="bf-bezahlt" /> Bereits bezahlt</label>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn danger hidden" id="btn-delete-buchung">Löschen</button>
+        <div class="btn-row">
+          <button class="btn secondary" id="btn-cancel-buchung">Abbrechen</button>
+          <button class="btn success" id="btn-save-buchung">Speichern</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- Urlaub/Krank ---------- -->
+  <div class="modal-overlay hidden" id="urlaub-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Urlaub/Krank</h2>
+        <button class="modal-close" id="urlaub-modal-close" aria-label="Schließen">×</button>
+      </div>
+      <div class="modal-body">
+        <div id="urlaub-liste"></div>
+        <div class="inline-add-row" id="urlaub-add-row" style="margin-top:14px;">
+          <select id="uk-spieler"></select>
+          <select id="uk-typ">
+            <option value="urlaub">Urlaub</option>
+            <option value="krank">Krank</option>
+          </select>
+          <input type="date" id="uk-von" />
+          <input type="date" id="uk-bis" />
+          <input type="text" id="uk-grund" placeholder="Grund (optional)" />
+          <button type="button" class="btn small secondary" id="btn-add-abwesenheit">+ Eintrag</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div></div>
+        <button class="btn" id="btn-close-urlaub">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="qrcode.js?v=1.0"></script>
+  <script src="config.js?v=1.0"></script>
+  <script src="db.js?v=1.0"></script>
+  <script src="app.js?v=1.0"></script>
+</body>
+</html>

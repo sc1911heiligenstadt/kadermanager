@@ -1,0 +1,6 @@
+# Seed/Testdaten mit echten Personendaten (Kader, Namen) -> niemals committen (nur Cloud)
+*.seed.json
+seed*.json
+
+# Lokales Claude-Projektgedächtnis, nicht Teil des öffentlichen Repos
+CLAUDE.md
