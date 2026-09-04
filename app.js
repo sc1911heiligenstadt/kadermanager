@@ -1551,22 +1551,38 @@ function renderStatistik() {
     });
     return { zu, gemeldet, gesamt: rel.length };
   }
+  // ⚠️ Die Quote zaehlt bewusst nur Termine MIT Rueckmeldung (siehe CLAUDE.md) --
+  // daran wird hier nichts geaendert. Der Haken daran ist die Lesart: wer gar
+  // nicht antwortet, taucht im Nenner nicht auf und steht mit 100 % da, waehrend
+  // ueber der Tabelle die Gesamtzahl der Termine steht. Zwei Zusagen aus zwei
+  // Rueckmeldungen sahen damit besser aus als neun Zusagen aus zehn.
+  //
+  // Deshalb wird die Zahl der offenen Termine danebengeschrieben, statt die
+  // Rechenart umzudrehen: die Quote bleibt die vereinbarte, aber sie steht nicht
+  // mehr allein da. Genau dafuer war "gesamt" gedacht -- es wurde berechnet und
+  // bis hierher nie benutzt.
   function quote(s) { return s.gemeldet ? Math.round((s.zu / s.gemeldet) * 100) + " %" : "—"; }
+  function zelle(s) {
+    const offen = s.gesamt - s.gemeldet;
+    return `${s.zu} / ${s.gemeldet}` +
+      (offen > 0 ? ` <span class="muted">+${offen} offen</span>` : "");
+  }
   const rows = team.kader.slice().sort((a, b) => a.name.localeCompare(b.name)).map((s) => {
     const tr = statFor(s.id, "training");
     const sp = statFor(s.id, "spiel");
     return `<tr>
       <td class="strong">${escapeHtml(s.name || "—")}</td>
-      <td class="num">${tr.zu} / ${tr.gemeldet}</td>
+      <td class="num">${zelle(tr)}</td>
       <td class="num">${quote(tr)}</td>
-      <td class="num">${sp.zu} / ${sp.gemeldet}</td>
+      <td class="num">${zelle(sp)}</td>
       <td class="num">${quote(sp)}</td>
     </tr>`;
   }).join("");
   wrap.innerHTML = `<table class="data-table">
     <thead><tr><th>Spieler</th><th class="num">🏃 Zusagen</th><th class="num">🏃 Quote</th><th class="num">⚽ Zusagen</th><th class="num">⚽ Quote</th></tr></thead>
     <tbody>${rows || `<tr><td colspan="5" class="muted">Noch keine Spieler im Kader.</td></tr>`}</tbody>
-  </table>`;
+  </table>
+  <p class="muted" style="margin:8px 0 0;">„Zusagen“ heißt Zusagen von den Terminen mit Rückmeldung; die Quote rechnet genauso. „offen“ sind Termine, zu denen nichts kam — sie zählen in keine der beiden Zahlen.</p>`;
 }
 
 // ---------- Umfragen ----------

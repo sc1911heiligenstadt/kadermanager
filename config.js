@@ -91,6 +91,18 @@ const ROLLEN_RECHTE = {
 
 const APP_CHANGELOG = [
   {
+    version: "1.1",
+    groups: [
+      {
+        title: "Statistik zeigt jetzt auch die offenen Termine",
+        items: [
+          "Die Quote zählt wie bisher nur Termine, zu denen eine Rückmeldung kam — daran ändert sich nichts. Nur stand sie bisher allein da: Wer zweimal von zehn Terminen geantwortet und beide Male zugesagt hat, kam auf 100 %, während jemand mit neun Zusagen aus zehn Rückmeldungen bei 90 % stand.",
+          "Neben den Zusagen steht deshalb jetzt, zu wie vielen Terminen gar nichts kam („+8 offen“). Unter der Tabelle erklärt ein Satz, was in welche Zahl zählt."
+        ]
+      }
+    ]
+  },
+  {
     version: "1.0",
     groups: [
       {
