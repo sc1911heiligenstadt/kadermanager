@@ -254,11 +254,11 @@
                  (Torwartgruppe, Athletikgruppe) wäre eine Mannschaft als
                  Vorschlag genau falsch. -->
             <div class="form-field">
-              <label>Name *</label>
+              <label for="tf-name">Name *</label>
               <input type="text" id="tf-name" list="vereins-mannschaften" placeholder="z. B. B1" autocomplete="off" />
               <datalist id="vereins-mannschaften"></datalist>
             </div>
-            <div class="form-field"><label>Farbe</label><input type="color" id="tf-farbe" value="#1a56a0" /></div>
+            <div class="form-field"><label for="tf-farbe">Farbe</label><input type="color" id="tf-farbe" value="#1a56a0" /></div>
           </div>
         </form>
       </div>
@@ -287,9 +287,9 @@
             <p class="muted" style="margin:6px 0 0;font-size:13px;">Übernimmt Name und Kontoverknüpfung, damit der Spieler in beiden Kadern dieselbe Person ist.</p>
           </div>
           <div class="form-grid">
-            <div class="form-field"><label>Name *</label><input type="text" id="pf-name" placeholder="Vor- und Nachname" /></div>
-            <div class="form-field"><label>Position</label><input type="text" id="pf-position" placeholder="z. B. Tor, Abwehr" /></div>
-            <div class="form-field"><label>Rückennummer</label><input type="number" id="pf-nummer" min="0" placeholder="optional" /></div>
+            <div class="form-field"><label for="pf-name">Name *</label><input type="text" id="pf-name" placeholder="Vor- und Nachname" /></div>
+            <div class="form-field"><label for="pf-position">Position</label><input type="text" id="pf-position" placeholder="z. B. Tor, Abwehr" /></div>
+            <div class="form-field"><label for="pf-nummer">Rückennummer</label><input type="number" id="pf-nummer" min="0" placeholder="optional" /></div>
           </div>
           <div class="form-field wide">
             <label>Foto</label>
@@ -306,7 +306,7 @@
             </div>
           </div>
           <div class="form-field wide">
-            <label>Verknüpftes Konto (Tools-Übersicht-Nutzername)</label>
+            <label for="pf-linked">Verknüpftes Konto (Tools-Übersicht-Nutzername)</label>
             <input type="text" id="pf-linked" placeholder="optional — meist per „Das bin ich“ vom Spieler selbst" />
           </div>
           <div class="form-field wide">
@@ -335,21 +335,21 @@
       <div class="modal-body">
         <form id="termin-form">
           <div class="form-grid">
-            <div class="form-field"><label>Art *</label><select id="ef-typ"></select></div>
-            <div class="form-field"><label>Titel</label><input type="text" id="ef-titel" placeholder="optional (z. B. Testspiel)" /></div>
-            <div class="form-field"><label>Datum *</label><input type="date" id="ef-datum" /></div>
-            <div class="form-field"><label>Von</label><input type="time" id="ef-startzeit" /></div>
-            <div class="form-field"><label>Bis</label><input type="time" id="ef-endzeit" /></div>
-            <div class="form-field"><label>Ort</label><input type="text" id="ef-ort" placeholder="z. B. Sportplatz Heiligenstadt" /></div>
-            <div class="form-field" id="ef-gegner-field"><label>Gegner</label><input type="text" id="ef-gegner" placeholder="nur bei Spielen" /></div>
-            <div class="form-field"><label>Treffpunkt</label><input type="text" id="ef-treffpunkt" placeholder="z. B. 30 Min. vorher" /></div>
+            <div class="form-field"><label for="ef-typ">Art *</label><select id="ef-typ"></select></div>
+            <div class="form-field"><label for="ef-titel">Titel</label><input type="text" id="ef-titel" placeholder="optional (z. B. Testspiel)" /></div>
+            <div class="form-field"><label for="ef-datum">Datum *</label><input type="date" id="ef-datum" /></div>
+            <div class="form-field"><label for="ef-startzeit">Von</label><input type="time" id="ef-startzeit" /></div>
+            <div class="form-field"><label for="ef-endzeit">Bis</label><input type="time" id="ef-endzeit" /></div>
+            <div class="form-field"><label for="ef-ort">Ort</label><input type="text" id="ef-ort" placeholder="z. B. Sportplatz Heiligenstadt" /></div>
+            <div class="form-field" id="ef-gegner-field"><label for="ef-gegner">Gegner</label><input type="text" id="ef-gegner" placeholder="nur bei Spielen" /></div>
+            <div class="form-field"><label for="ef-treffpunkt">Treffpunkt</label><input type="text" id="ef-treffpunkt" placeholder="z. B. 30 Min. vorher" /></div>
           </div>
-          <div class="form-field wide"><label>Notiz</label><input type="text" id="ef-notiz" placeholder="optional" /></div>
-          <div class="form-field wide"><label>Video-Link</label><input type="url" id="ef-video" placeholder="optional, z. B. YouTube-Link" /></div>
+          <div class="form-field wide"><label for="ef-notiz">Notiz</label><input type="text" id="ef-notiz" placeholder="optional" /></div>
+          <div class="form-field wide"><label for="ef-video">Video-Link</label><input type="url" id="ef-video" placeholder="optional, z. B. YouTube-Link" /></div>
           <div id="ef-zyklisch-wrap">
             <label class="checkbox-row" style="margin-top:10px;"><input type="checkbox" id="ef-zyklisch" /> Wöchentlich wiederholen</label>
             <div class="form-field hidden" id="ef-wochen-field" style="max-width:200px;margin-top:10px;">
-              <label>Anzahl Wochen</label>
+              <label for="ef-wochen">Anzahl Wochen</label>
               <input type="number" id="ef-wochen" min="2" max="52" placeholder="z. B. 10" />
             </div>
           </div>
@@ -415,10 +415,10 @@
         <div id="detail-spielbericht-wrap" class="hidden">
           <h3 class="detail-subhead">Spielbericht</h3>
           <div class="form-grid">
-            <div class="form-field"><label>Tore eigene Mannschaft</label><input type="number" id="sb-eigene" min="0" /></div>
-            <div class="form-field"><label>Tore Gegner</label><input type="number" id="sb-gegner" min="0" /></div>
+            <div class="form-field"><label for="sb-eigene">Tore eigene Mannschaft</label><input type="number" id="sb-eigene" min="0" /></div>
+            <div class="form-field"><label for="sb-gegner">Tore Gegner</label><input type="number" id="sb-gegner" min="0" /></div>
           </div>
-          <div class="form-field wide"><label>Bericht</label><textarea id="sb-bericht" rows="3" placeholder="optional"></textarea></div>
+          <div class="form-field wide"><label for="sb-bericht">Bericht</label><textarea id="sb-bericht" rows="3" placeholder="optional"></textarea></div>
           <div class="form-field wide">
             <label>Torschützen</label>
             <div id="detail-torschuetzen"></div>
@@ -457,7 +457,7 @@
       </div>
       <div class="modal-body">
         <form id="umfrage-form">
-          <div class="form-field wide"><label>Frage *</label><input type="text" id="uf-frage" placeholder="z. B. Grillfest — wer kommt?" /></div>
+          <div class="form-field wide"><label for="uf-frage">Frage *</label><input type="text" id="uf-frage" placeholder="z. B. Grillfest — wer kommt?" /></div>
           <div class="form-field wide">
             <label>Antwortoptionen *</label>
             <div id="uf-optionen"></div>
@@ -486,21 +486,21 @@
       <div class="modal-body">
         <form id="buchung-form">
           <div class="form-grid">
-            <div class="form-field wide"><label>Vorlage aus Strafenkatalog</label><select id="bf-vorlage"></select></div>
-            <div class="form-field"><label>Spieler</label><select id="bf-spieler"></select></div>
-            <div class="form-field"><label>Art</label><select id="bf-richtung">
+            <div class="form-field wide"><label for="bf-vorlage">Vorlage aus Strafenkatalog</label><select id="bf-vorlage"></select></div>
+            <div class="form-field"><label for="bf-spieler">Spieler</label><select id="bf-spieler"></select></div>
+            <div class="form-field"><label for="bf-richtung">Art</label><select id="bf-richtung">
               <option value="ein">Einnahme (Strafe / Beitrag / Einzahlung)</option>
               <option value="aus">Ausgabe</option>
             </select></div>
-            <div class="form-field"><label>Kategorie</label><select id="bf-kategorie">
+            <div class="form-field"><label for="bf-kategorie">Kategorie</label><select id="bf-kategorie">
               <option value="sonstiges">Sonstiges</option>
               <option value="beitrag">Beitrag</option>
               <option value="strafe">Strafe</option>
             </select></div>
-            <div class="form-field"><label>Betrag (€) *</label><input type="number" id="bf-betrag" min="0" step="0.01" placeholder="0,00" /></div>
-            <div class="form-field"><label>Datum</label><input type="date" id="bf-datum" /></div>
+            <div class="form-field"><label for="bf-betrag">Betrag (€) *</label><input type="number" id="bf-betrag" min="0" step="0.01" placeholder="0,00" /></div>
+            <div class="form-field"><label for="bf-datum">Datum</label><input type="date" id="bf-datum" /></div>
           </div>
-          <div class="form-field wide"><label>Bezeichnung *</label><input type="text" id="bf-bezeichnung" placeholder="z. B. Zu spät zum Training" /></div>
+          <div class="form-field wide"><label for="bf-bezeichnung">Bezeichnung *</label><input type="text" id="bf-bezeichnung" placeholder="z. B. Zu spät zum Training" /></div>
           <label class="checkbox-row" style="margin-top:6px;"><input type="checkbox" id="bf-bezahlt" /> Bereits bezahlt</label>
         </form>
       </div>
