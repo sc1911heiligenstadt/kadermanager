@@ -91,6 +91,19 @@ const ROLLEN_RECHTE = {
 
 const APP_CHANGELOG = [
   {
+    version: "1.2",
+    groups: [
+      {
+        title: "Eine Antwortoption umbenennen löscht nicht mehr die Stimmen",
+        items: [
+          "Wer im Dialog „Umfrage bearbeiten“ eine Antwortoption nur korrigierte — einen Tippfehler, „10 Uhr“ zu „10:00 Uhr“, ein Leerzeichen zu viel —, verlor damit alle Stimmen, die auf diese Option entfallen waren. Ohne Rückfrage, ohne Hinweis, und das Ergebnis der Umfrage stimmte danach nicht mehr.",
+          "Die Zuordnung läuft jetzt über die Option selbst statt über ihren Text. Umbenennen ändert nur noch die Beschriftung, die Stimmen bleiben stehen.",
+          "Wird eine Option wirklich entfernt, gehen ihre Stimmen weiterhin mit — das steht jetzt aber vorher in einer Rückfrage, mit der Zahl der betroffenen Stimmen."
+        ]
+      }
+    ]
+  },
+  {
     version: "1.1",
     groups: [
       {

@@ -1660,16 +1660,21 @@ function openUmfrageModal(id) {
   document.getElementById("uf-mehrfach").checked = u ? u.mehrfach : false;
   const wrap = document.getElementById("uf-optionen");
   wrap.innerHTML = "";
-  const opts = u && u.optionen.length ? u.optionen.map((o) => o.text) : ["", ""];
-  opts.forEach((txt) => addOptionRow(txt));
+  // ⚠️ Die Id der Option muss mit in die Zeile. Sie ist die einzige stabile
+  // Klammer zwischen der alten und der neuen Fassung — siehe saveUmfrage().
+  const opts = u && u.optionen.length ? u.optionen.map((o) => ({ text: o.text, id: o.id })) : [{ text: "" }, { text: "" }];
+  opts.forEach((o) => addOptionRow(o.text, o.id));
   document.getElementById("btn-delete-umfrage").classList.toggle("hidden", !u);
   document.getElementById("umfrage-modal").classList.remove("hidden");
   document.getElementById("uf-frage").focus();
 }
-function addOptionRow(text) {
+// Eine Zeile im Optionen-Kasten. `optId` ist die Id einer BESTEHENDEN Option;
+// eine frisch hinzugefügte Zeile bekommt keine und damit beim Speichern eine neue.
+function addOptionRow(text, optId) {
   const wrap = document.getElementById("uf-optionen");
   const row = document.createElement("div");
   row.className = "uf-option-row";
+  if (optId) row.dataset.optId = optId;
   row.innerHTML = `<input type="text" class="uf-opt-input" placeholder="Antwortoption" /><button type="button" class="icon-btn uf-opt-remove" title="Entfernen">×</button>`;
   row.querySelector("input").value = text || "";
   wrap.appendChild(row);
@@ -1680,19 +1685,46 @@ function saveUmfrage() {
   if (!team) return;
   const frage = val("uf-frage").trim();
   if (!frage) { alert("Bitte eine Frage eingeben."); return; }
-  const texts = Array.from(document.querySelectorAll("#uf-optionen .uf-opt-input")).map((el) => el.value.trim()).filter(Boolean);
-  if (texts.length < 2) { alert("Bitte mindestens zwei Antwortoptionen angeben."); return; }
+  // Gelesen wird die ZEILE, nicht nur das Eingabefeld: an ihr hängt die Id.
+  const zeilen = Array.from(document.querySelectorAll("#uf-optionen .uf-option-row"))
+    .map((row) => {
+      const feld = row.querySelector(".uf-opt-input");
+      return { text: feld ? feld.value.trim() : "", id: row.dataset.optId || "" };
+    })
+    .filter((z) => z.text);
+  if (zeilen.length < 2) { alert("Bitte mindestens zwei Antwortoptionen angeben."); return; }
   let u = editingUmfrageId ? team.umfragen.find((x) => x.id === editingUmfrageId) : null;
+
+  // ⚠️ Zugeordnet wird über die ID der Zeile, NIEMALS über den Text.
+  // Über den Text lief es bis zum 05.09.2026: wer eine Option nur korrigierte
+  // („10 Uhr" → „10:00 Uhr", ein Leerzeichen zu viel), bekam eine neue Id — und
+  // die Filterzeile weiter unten warf jede Stimme weg, die auf die alte zeigte.
+  // Lautlos, ohne Rückfrage, und die Umfrage zeigte danach ein falsches
+  // Ergebnis, das niemand mehr rekonstruieren konnte ([[f-name-als-key]]).
+  // Nebenbei behoben: zwei Optionen mit gleichem Text teilten sich eine Id.
+  const alt = u && u.optionen ? u.optionen.slice() : [];
+  const neu = zeilen.map((z) => {
+    const match = z.id ? alt.find((o) => o.id === z.id) : null;
+    return match ? { id: match.id, text: z.text } : { id: uuid(), text: z.text };
+  });
+  const neuIds = neu.map((o) => o.id);
+
+  // Eine wirklich ENTFERNTE Option nimmt ihre Stimmen mit — das ist richtig so,
+  // muss aber vorher dastehen. Ohne die Rückfrage verschwinden abgegebene
+  // Stimmen bei einem Klick auf „Speichern", und niemand erfährt davon.
+  if (u) {
+    let verlorene = 0;
+    Object.values(u.stimmen || {}).forEach((arr) => {
+      (arr || []).forEach((oid) => { if (!neuIds.includes(oid)) verlorene++; });
+    });
+    if (verlorene && !confirm(
+      (verlorene === 1 ? "1 bereits abgegebene Stimme geht" : verlorene + " bereits abgegebene Stimmen gehen") +
+      " verloren, weil die zugehörige Antwortoption entfernt wird.\n\nTrotzdem speichern?")) return;
+  }
+
   if (!u) { u = { id: uuid(), stimmen: {}, erstelltAm: new Date().toISOString(), offen: true }; team.umfragen.push(u); }
   u.frage = frage;
   u.mehrfach = checked("uf-mehrfach");
-  // bestehende Optionen nach Text wiederverwenden (erhält Stimmen), neue anhängen
-  const alt = u.optionen ? u.optionen.slice() : [];
-  const neu = texts.map((txt) => {
-    const match = alt.find((o) => o.text === txt);
-    return match ? { id: match.id, text: txt } : { id: uuid(), text: txt };
-  });
-  const neuIds = neu.map((o) => o.id);
   u.optionen = neu;
   Object.keys(u.stimmen).forEach((sid) => {
     u.stimmen[sid] = u.stimmen[sid].filter((oid) => neuIds.includes(oid));
